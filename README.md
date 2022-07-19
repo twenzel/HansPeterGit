@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/HansPeterGit.svg)](https://nuget.org/packages/HansPeterGit/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://github.com/twenzel/HansPeterGit/workflows/Build/badge.svg?branch=main)](https://github.com/twenzel/HansPeterGit/actions)
+[![Build Status](https://github.com/twenzel/HansPeterGit/workflows/CI/badge.svg?branch=main)](https://github.com/twenzel/HansPeterGit/actions)
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=twenzel_HansPeterGit&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=twenzel_HansPeterGit)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=twenzel_HansPeterGit&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=twenzel_HansPeterGit)
