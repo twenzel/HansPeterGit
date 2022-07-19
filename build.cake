@@ -165,7 +165,8 @@ Task("SonarEnd")
 		// Push the package.
 		NuGetPush(packages, new NuGetPushSettings {
 			Source = nugetPublishFeed,
-			ApiKey = nugetApiKey
+			ApiKey = nugetApiKey,
+			SkipDuplicate = true
 		});	
 	});
 
