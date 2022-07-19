@@ -8,8 +8,12 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 });
 ILogger logger = loggerFactory.CreateLogger<Program>();
 
+var workingdir = @"c:\temp\testgit";
 
-var repository = GitRepository.Clone("https://github.com/twenzel/HansPeterGit", @"c:\temp\testgit", logger);
+if (Directory.Exists(workingdir))
+    Directory.Delete(workingdir, true);
+
+var repository = GitRepository.Clone("https://github.com/twenzel/HansPeterGit", workingdir, logger);
 
 File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 
