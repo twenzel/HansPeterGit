@@ -39,7 +39,7 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
         get
         {
             if (string.IsNullOrEmpty(path))
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             var list = _statusEntries.Where((StatusEntry e) => string.Equals(e.FilePath, path, StringComparison.Ordinal)).ToList();
             if (list.Count == 0)

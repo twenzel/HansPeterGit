@@ -29,7 +29,6 @@ internal static class StatusParser
 
         foreach (var line in stdout.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
         {
-            // The first character determines the fate of this line
             Match? itemMatch = null;
             switch (line[0])
             {
@@ -55,37 +54,41 @@ internal static class StatusParser
                     break;
             }
 
-            // If we have an item match, deal with it
-            if (itemMatch != null)
-            {
-                if (itemMatch.Success)
-                {
-                    var item = new StatusEntry
-                    {
-                        FilePath = itemMatch.Groups["path"].Value,
-                    };
-
-                    var code = itemMatch.Groups["flag"].Value;
-                    if (code.Length == 2)
-                    {
-                        item.IndexStatus = s_codeMap[code[0]];
-                        item.WorkDirStatus = s_codeMap[code[1]];
-                    }
-                    else
-                    {
-                        item.IndexStatus = FileStatus.Unknown;
-                        item.WorkDirStatus = s_codeMap[code[0]];
-                    }
-
-                    entries.Add(item);
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Could not parse item line: {line}");
-                }
-            }
+            AddEntry(entries, line, itemMatch);
         }
 
         return new RepositoryStatus(entries, commit, branchName);
+    }
+
+    private static void AddEntry(List<StatusEntry> entries, string line, Match? itemMatch)
+    {
+        if (itemMatch != null)
+        {
+            if (itemMatch.Success)
+            {
+                var item = new StatusEntry
+                {
+                    FilePath = itemMatch.Groups["path"].Value,
+                };
+
+                var code = itemMatch.Groups["flag"].Value;
+                if (code.Length == 2)
+                {
+                    item.IndexStatus = s_codeMap[code[0]];
+                    item.WorkDirStatus = s_codeMap[code[1]];
+                }
+                else
+                {
+                    item.IndexStatus = FileStatus.Unknown;
+                    item.WorkDirStatus = s_codeMap[code[0]];
+                }
+
+                entries.Add(item);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Could not parse item line: {line}");
+            }
+        }
     }
 }

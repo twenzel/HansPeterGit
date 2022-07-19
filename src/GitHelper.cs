@@ -53,14 +53,6 @@ public class GitHelper
     }
 
     /// <summary>
-    /// Runs the given git command, and passes STDOUT through to the current process's STDOUT.
-    /// </summary>
-    public void CommandNoisy(params string[] command)
-    {
-        CommandOutputPipe(stdout => Logger?.LogInformation(stdout.ReadToEnd()), command);
-    }
-
-    /// <summary>
     /// Runs the given git command, and redirects STDOUT to the provided action.
     /// </summary>
     public void CommandOutputPipe(Action<TextReader> handleOutput, params string[] command)
@@ -138,7 +130,7 @@ public class GitHelper
         startInfo.StandardOutputEncoding = s_encoding;
     }
 
-    private void RedirectStderr(ProcessStartInfo startInfo)
+    private static void RedirectStderr(ProcessStartInfo startInfo)
     {
         startInfo.RedirectStandardError = true;
         startInfo.StandardErrorEncoding = s_encoding;
@@ -150,7 +142,7 @@ public class GitHelper
         // there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
     }
 
-    protected virtual GitProcess Start(string[] command, Action<ProcessStartInfo> initialize)
+    protected GitProcess Start(string[] command, Action<ProcessStartInfo> initialize)
     {
         var startInfo = new ProcessStartInfo();
         startInfo.FileName = "git";
@@ -161,7 +153,7 @@ public class GitHelper
         if (!string.IsNullOrEmpty(WorkingDirectory))
             startInfo.WorkingDirectory = WorkingDirectory;
 
-        RedirectStderr(startInfo);
+        GitHelper.RedirectStderr(startInfo);
         initialize(startInfo);
         Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, startInfo.Arguments);
 
@@ -186,9 +178,6 @@ public class GitHelper
         private readonly Process _process;
 
         public string? StandardErrorString { get; private set; }
-
-
-        // Delegate a bunch of things to the Process.
 
         public ProcessStartInfo StartInfo { get { return _process.StartInfo; } }
         public int ExitCode { get { return _process.ExitCode; } }
@@ -220,7 +209,7 @@ public class GitHelper
             if (e.Data != null && e.Data.Trim() != "")
             {
                 var data = e.Data;
-                Logger?.LogInformation(data.TrimEnd());
+                Logger?.LogInformation("Git error: {error}", data.TrimEnd());
                 StandardErrorString += data;
             }
         }

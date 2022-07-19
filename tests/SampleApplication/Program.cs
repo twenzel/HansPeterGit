@@ -3,10 +3,7 @@ using Microsoft.Extensions.Logging;
 
 using var loggerFactory = LoggerFactory.Create(builder =>
 {
-    builder
-        .AddFilter("Microsoft", LogLevel.Warning)
-        .AddFilter("System", LogLevel.Warning)
-        .AddFilter("NonHostConsoleApp.Program", LogLevel.Debug)
+    builder.SetMinimumLevel(LogLevel.Debug)
         .AddConsole();
 });
 ILogger logger = loggerFactory.CreateLogger<Program>();
