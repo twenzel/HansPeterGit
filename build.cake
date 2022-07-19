@@ -6,7 +6,7 @@
 var target = Argument("target", "Default");
 var nugetApiKey = Argument("nugetApiKey", EnvironmentVariable("nugetApiKey"));
 var configuration = Argument("configuration", "Release");
-var sonarLogin = Argument("sonarLogin", EnvironmentVariable("SONAR_TOKEN"));
+var sonarLogin = Argument("sonarLogin", EnvironmentVariable("sonarLogin"));
 
 //////////////////////////////////////////////////////////////////////
 //    Build Variables
