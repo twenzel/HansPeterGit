@@ -118,7 +118,7 @@ public class GitRepository
         if (output == null)
             throw new InvalidOperationException("Git status command failed");
 
-        return StatusParser.ParseOutput(output);
+        return StatusParser.Parse(output);
     }
 
     /// <summary>

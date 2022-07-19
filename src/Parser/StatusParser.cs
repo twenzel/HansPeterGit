@@ -21,13 +21,13 @@ internal static class StatusParser
         s_codeMap.Add('A', FileStatus.Added);
     }
 
-    public static RepositoryStatus ParseOutput(string stdout)
+    public static RepositoryStatus Parse(string output)
     {
         var entries = new List<StatusEntry>();
         var branchName = string.Empty;
         var commit = string.Empty;
 
-        foreach (var line in stdout.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        foreach (var line in output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
         {
             Match? itemMatch = null;
             switch (line[0])
