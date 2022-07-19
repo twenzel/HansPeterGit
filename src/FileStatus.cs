@@ -1,59 +1,80 @@
 ﻿namespace HansPeterGit;
 
+[Flags]
 public enum FileStatus
 {
-    Unknown,
+    /// <summary>
+    /// The file hasn't been modified.
+    /// </summary>
+    Unaltered = 0,
 
     /// <summary>
-    /// Files added to the index, which are not in the current commit
+    /// New file has been added to the Index. It's unknown from the Head.
     /// </summary>
-    Added,
+    NewInIndex = 1,
 
     /// <summary>
-    /// Files with unstaged modifications. A file may be modified and staged at the same time if it has been modified after adding.
+    /// New version of a file has been added to the Index. A previous version exists in the Head.
     /// </summary>
-    Modified,
-    /// <summary>
-    /// Files removed from the index but are existent in the current commit
-    /// </summary>
-    Removed,
-    Renamed,
-    TypeChange,
+    ModifiedInIndex = 2,
 
     /// <summary>
-    /// Files existing in the working directory that are ignored.
+    /// The deletion of a file has been promoted from the working directory to the Index. A previous version exists in the Head.
     /// </summary>
-    Ignored,
-    Unchanged,
-    Nonexistent,
+    DeletedFromIndex = 4,
 
     /// <summary>
-    /// Files existing in the working directory but are neither tracked in the index nor in the current commit.
+    /// The renaming of a file has been promoted from the working directory to the Index. A previous version exists in the Head.
     /// </summary>
-    Untracked
+    RenamedInIndex = 8,
+
+    /// <summary>
+    /// A change in type for a file has been promoted from the working directory to the Index. A previous version exists in the Head.
+    /// </summary>
+    TypeChangeInIndex = 16,
+
+    /// <summary>
+    /// New file in the working directory, unknown from the Index and the Head.
+    /// </summary>
+    NewInWorkdir = 32,
+
+    /// <summary>
+    /// The file has been updated in the working directory. A previous version exists in the Index.
+    /// </summary>
+    ModifiedInWorkdir = 64,
+
+    /// <summary>
+    /// The file has been deleted from the working directory. A previous version exists in the Index.
+    /// </summary>
+    DeletedFromWorkdir = 128,
+
+    /// <summary>
+    /// The file type has been changed in the working directory. A previous version exists in the Index.
+    /// </summary>
+    TypeChangeInWorkdir = 256,
+
+    /// <summary>
+    /// The file has been renamed in the working directory.  The previous version at the previous name exists in the Index.
+    /// </summary>
+    RenamedInWorkdir = 512,
+
+    /// <summary>
+    /// The file is unreadable in the working directory.
+    /// </summary>
+    Unreadable = 1024,
+
+    /// <summary>
+    /// The file is <see cref="NewInWorkdir"/> but its name and/or path matches an exclude pattern in a <c>gitignore</c> file.
+    /// </summary>
+    Ignored = 2048,
+
+    /// <summary>
+    /// The file is <see cref="Conflicted"/> due to a merge.
+    /// </summary>
+    Conflicted = 4096,
+
+    /// <summary>
+    /// The file doesn't exist.
+    /// </summary>
+    Nonexistent = 1073741824,
 }
-
-
-
-/////List of files added to the index, which are already in the current commit with    different content
-//Staged
-
-
-
-//	/// List of files existent in the index but are missing in the working directory
-//	Missing
-
-
-
-//	///List of files existing in the working directory but are neither tracked in the index nor in the current commit.
-//	Untracked
-
-
-//	/// List of files that were renamed and staged.
-//	RenamedInIndex
-
-//	///List of files that were renamed in the working directory but have not been staged.
-//	RenamedInWorkDir
-
-//	///List of files that were unmodified in the working directory.
-//	Unaltered

@@ -1,8 +1,12 @@
-﻿namespace HansPeterGit;
+﻿using System.Diagnostics;
 
+namespace HansPeterGit;
+
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class StatusEntry
 {
-    public FileStatus IndexStatus { get; set; }
-    public FileStatus WorkDirStatus { get; set; }
+    public FileStatus State { get; set; }
     public string FilePath { get; init; } = string.Empty;
+
+    private string DebuggerDisplay => $"{State}: {FilePath}";
 }

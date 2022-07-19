@@ -15,10 +15,9 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
     private readonly List<StatusEntry> _modified = new List<StatusEntry>();
     private readonly List<StatusEntry> _untracked = new List<StatusEntry>();
     private readonly List<StatusEntry> _ignored = new List<StatusEntry>();
-    private readonly List<StatusEntry> _renamed = new List<StatusEntry>();
+    private readonly List<StatusEntry> _renamedInIndex = new List<StatusEntry>();
     private readonly List<StatusEntry> _renamedInWorkDir = new List<StatusEntry>();
     private readonly List<StatusEntry> _unchanged = new List<StatusEntry>();
-    private readonly List<StatusEntry> _typeChanged = new List<StatusEntry>();
 
     private static readonly Dictionary<FileStatus, Action<RepositoryStatus, StatusEntry>> s_mapper = CreateMapper();
 
@@ -44,7 +43,7 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
             var list = _statusEntries.Where((StatusEntry e) => string.Equals(e.FilePath, path, StringComparison.Ordinal)).ToList();
             if (list.Count == 0)
             {
-                return new StatusEntry { FilePath = path, WorkDirStatus = FileStatus.Nonexistent, IndexStatus = FileStatus.Nonexistent };
+                return new StatusEntry { FilePath = path, State = FileStatus.Nonexistent };
             }
 
             return list.Single();
@@ -89,7 +88,7 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
     /// <summary>
     /// List of files that were renamed and staged.
     /// </summary>
-    public IEnumerable<StatusEntry> RenamedInIndex => _renamed;
+    public IEnumerable<StatusEntry> RenamedInIndex => _renamedInIndex;
 
     /// <summary>
     /// List of files that were renamed in the working directory but have not been staged.
@@ -101,10 +100,6 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
     /// </summary>
     public IEnumerable<StatusEntry> Unchanged => _unchanged;
 
-    /// <summary>
-    /// List of files that were changed by its type.
-    /// </summary>
-    public IEnumerable<StatusEntry> TypeChanged => _typeChanged;
 
     internal RepositoryStatus(IEnumerable<StatusEntry> entries, string commit, string branch)
     {
@@ -112,10 +107,7 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
 
         BuildLists(entries);
 
-        IsDirty = _statusEntries.Any((StatusEntry entry) =>
-            (entry.WorkDirStatus != FileStatus.Ignored && entry.WorkDirStatus != FileStatus.Unchanged)
-            || (entry.IndexStatus != FileStatus.Ignored && entry.IndexStatus != FileStatus.Unchanged)
-            );
+        IsDirty = _statusEntries.Any((StatusEntry entry) => entry.State != FileStatus.Ignored && entry.State != FileStatus.Unaltered);
         Commit = commit;
         Branch = branch;
     }
@@ -129,34 +121,38 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
     private void AddEntry(StatusEntry entry)
     {
         _statusEntries.Add(entry);
-        s_mapper[entry.WorkDirStatus](this, entry);
+
+        if (entry.State == FileStatus.Unaltered)
+        {
+            _unchanged.Add(entry);
+        }
+        else
+        {
+            foreach (var info in s_mapper)
+            {
+                if (!entry.State.HasFlag(info.Key))
+                    continue;
+
+                info.Value(this, entry);
+            }
+        }
     }
 
     private static Dictionary<FileStatus, Action<RepositoryStatus, StatusEntry>> CreateMapper()
     {
         return new Dictionary<FileStatus, Action<RepositoryStatus, StatusEntry>>
-            {
-				//{ FileStatus.NewInWorkdir, (status, entry) => status._added.Add(entry) },
-				//{ FileStatus.ModifiedInWorkdir, (status, entry) => status._modified.Add(entry) },
-				//{ FileStatus.DeletedFromWorkdir, (status, entry) => status._removed.Add(entry) },
-				//{ FileStatus.NewInIndex, (status, entry) => status._staged.Add(entry) },
-				//{ FileStatus.ModifiedInIndex, (status, entry) => status._staged.Add(entry) },
-				//{ FileStatus.DeletedFromIndex, (status, entry) => status._removed.Add(entry) },
-				//{ FileStatus.Missing, (status, entry) => status._missing.Add(entry) },
-				//{ FileStatus.Unmerged, (status, entry) => status._modified.Add(entry) },
-				//{ FileStatus.Ignored, (status, entry) => status._ignored.Add(entry) },
-				//{ FileStatus.RenamedInIndex, (status, entry) => status._renamedInIndex.Add(entry) },
-				//{ FileStatus.RenamedInWorkdir, (status, entry) => status._renamedInWorkDir.Add(entry) },
-				//{ FileStatus.Unaltered, (status, entry) => status._unaltered.Add(entry) }
-				{ FileStatus.Added, (status, entry) => status._added.Add(entry) },
-                { FileStatus.Ignored, (status, entry) => status._ignored.Add(entry) },
-                { FileStatus.Modified, (status, entry) => status._modified.Add(entry) },
-                { FileStatus.Removed, (status, entry) => status._removed.Add(entry) },
-                { FileStatus.Renamed, (status, entry) => status._renamed.Add(entry) },
-                { FileStatus.TypeChange, (status, entry) => status._typeChanged.Add(entry) },
-                { FileStatus.Unchanged, (status, entry) => status._unchanged.Add(entry) },
-                { FileStatus.Untracked, (status, entry) => status._untracked.Add(entry) },
-            };
+        {
+            { FileStatus.NewInWorkdir, (rs, s) => rs._untracked.Add(s) },
+            { FileStatus.ModifiedInWorkdir, (rs, s) => rs._modified.Add(s) },
+            { FileStatus.DeletedFromWorkdir, (rs, s) => rs._missing.Add(s) },
+            { FileStatus.NewInIndex, (rs, s) => rs._added.Add(s) },
+            { FileStatus.ModifiedInIndex, (rs, s) => rs._staged.Add(s) },
+            { FileStatus.DeletedFromIndex, (rs, s) => rs._removed.Add(s) },
+            { FileStatus.RenamedInIndex, (rs, s) => rs._renamedInIndex.Add(s) },
+            { FileStatus.Ignored, (rs, s) => rs._ignored.Add(s) },
+            { FileStatus.RenamedInWorkdir, (rs, s) => rs._renamedInWorkDir.Add(s) },
+            { FileStatus.Conflicted, (rs, s) => rs._renamedInWorkDir.Add(s) },
+         };
     }
 
     /// <summary>
