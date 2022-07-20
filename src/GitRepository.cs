@@ -87,9 +87,24 @@ public class GitRepository
         Add(".", "-A");
     }
 
+    public void Add(string path)
+    {
+        _helper.Command("add", path);
+    }
+
     public void Add(string path, string option)
     {
         _helper.Command("add", path, option);
+    }
+
+    public void Restore(string path)
+    {
+        _helper.Command("restore", path);
+    }
+
+    public void Unstage(string path)
+    {
+        _helper.Command("restore", "--staged", path);
     }
 
     public RepositoryStatus GetStatus()

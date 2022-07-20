@@ -26,3 +26,88 @@ An installed version of git should be accessible via path.
 Add the NuGet package [HansPeterGit](https://nuget.org/packages/HansPeterGit/) to any project supporting .NET Standard 2.0 or higher.
 
 > &gt; dotnet add package HansPeterGit
+
+## Usage
+
+### Clone a repository
+
+**GitRepository.Clone()** can download a remote repository to the local file system, same as the git clone command.
+
+```csharp
+GitRepository.Clone("https://github.com/twenzel/HansPeterGit.git", @"D:\TestSample");
+```
+
+### Create a local repository
+
+The **GitRepository.Init()** method can create a new Git repository in the specified path, equivalent to the git init command.
+
+```csharp
+var repos = new GitRepository(@"D:\TestSample");
+repos.Init();
+```
+
+### Get status
+
+Using the **GetStatus()** method to retrieve the repositories current status.
+
+```csharp
+var repos = new GitRepository(@"D:\TestSample");
+var status = repos.GetStatus();
+
+Console.WriteLine($"Current branch: {status.Branch}");
+Console.WriteLine($"Current commit: {status.Commit}");
+
+if (status.IsDirty)
+{
+    var newfile = status.Added.First();
+}
+
+var fileInfo = status["src/newFile.json"];
+
+```
+
+### Staging/Restore
+
+To stage the current work tree use any of the **Stage/Add/Restore** methods.
+
+```csharp
+repos.StageAll();
+
+// Stage file
+repos.Add("src/newFile.json");
+
+// Discard changes in working directory
+repos.Restore("src/newFile.json");
+
+// Unstage file
+repos.Unstage("src/newFile.json");
+```
+
+### Commit changes
+
+The **Commit()** method can be used to commit the current changes.
+
+```csharp
+var commit = repos.Commit("Fix calculation bug");
+
+// with dedicated author
+repos.Commit("Fix calculation bug", new Author("Some name", "bugfixer@test.com"));
+```
+
+### Push changes
+
+To push changes from the local repository please use the **Push()** methods.
+
+```csharp
+repos.Push();
+
+// with dedicated remove name
+repos.Push("origin", "main");
+
+// with setting an upstream
+repos.PushWithUpstream("origin", "main");
+```
+
+### Others
+
+There are already some other methods but not all commands are wrapped/implemented yet. Please feel free to create an issue or contribute.
