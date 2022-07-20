@@ -1,8 +1,9 @@
 ﻿using System.Collections.Specialized;
+using HansPeterGit.Authentication;
 using Microsoft.Extensions.Logging;
 
 namespace HansPeterGit;
-public class GitOptions
+public record GitOptions
 {
     /// <summary>
     /// Gets or sets the logger instance
@@ -12,7 +13,7 @@ public class GitOptions
     /// <summary>
     /// Gets the working directory
     /// </summary>
-    public string WorkingDirectory { get; }
+    public string WorkingDirectory { get; set; }
 
     /// <summary>
     /// Gets or sets the path to git executable
@@ -23,6 +24,16 @@ public class GitOptions
     /// Action to define environment variables for the git process.
     /// </summary>
     public Action<StringDictionary>? SetEnvironmentVariables { get; set; }
+
+    /// <summary>
+    /// Get or sets whether the git command execution time should be logged
+    /// </summary>
+    public bool LogGitCommandDuration { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets an authentication used for some git commands
+    /// </summary>
+    public IAuthentication? Authentication { get; set; }
 
     /// <summary>
     /// Creates new instance of the options

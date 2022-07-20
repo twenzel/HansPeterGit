@@ -8,12 +8,15 @@ namespace HansPeterGit;
 public class GitHelper
 {
     private static readonly Regex s_validCommandName = new Regex("^[a-z0-9A-Z_-]+$");
+    private static readonly List<string> s_commandRequiringAuthentication = new List<string> { "clone", "push" };
 
     /// <summary>
     /// Starting with version 1.7.10, Git uses UTF-8.
     /// Use this encoding for Git input and output.
     /// </summary>
     private static readonly Encoding s_encoding = new UTF8Encoding(false, true);
+
+    private readonly Stopwatch _stopwatch = new Stopwatch();
 
     /// <summary>
     /// Gets the current working directory of the Git process.
@@ -43,10 +46,10 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
-    public string? Command(params string[] command)
+    public string? Command(params string[] commands)
     {
         string? output = null;
-        CommandOutputPipe(stdout => output = stdout.ReadToEnd(), command);
+        CommandOutputPipe(stdout => output = stdout.ReadToEnd(), commands);
 
         if (!string.IsNullOrEmpty(output))
             Logger?.LogDebug("Output: {output}", output);
@@ -57,10 +60,10 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and returns the first line of its STDOUT.
     /// </summary>
-    public string? CommandOneline(params string[] command)
+    public string? CommandOneline(params string[] commands)
     {
         string? output = null;
-        CommandOutputPipe(stdout => output = stdout.ReadLine(), command);
+        CommandOutputPipe(stdout => output = stdout.ReadLine(), commands);
 
         if (!string.IsNullOrEmpty(output))
             Logger?.LogDebug("Output: {output}", output);
@@ -71,51 +74,55 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and redirects STDOUT to the provided action.
     /// </summary>
-    public void CommandOutputPipe(Action<TextReader> handleOutput, params string[] command)
+    public void CommandOutputPipe(Action<TextReader> handleOutput, params string[] commands)
     {
-        Time(command, () =>
+        MeasureTime(commands, () =>
         {
-            AssertValidCommand(command);
-            var process = Start(command, RedirectStdout);
+            AssertValidCommand(commands);
+            var process = Start(commands, RedirectStdout);
             handleOutput(process.StandardOutput);
             Close(process);
         });
     }
 
-    public void CommandInputPipe(Action<TextWriter> action, params string[] command)
+    public void CommandInputPipe(Action<TextWriter> action, params string[] commands)
     {
-        Time(command, () =>
+        MeasureTime(commands, () =>
         {
-            AssertValidCommand(command);
-            var process = Start(command, RedirectStdin);
+            AssertValidCommand(commands);
+            var process = Start(commands, RedirectStdin);
             action(process.StandardInput.WithEncoding(s_encoding));
             Close(process);
         });
     }
 
-    public void CommandInputOutputPipe(Action<TextWriter, TextReader> interact, params string[] command)
+    public void CommandInputOutputPipe(Action<TextWriter, TextReader> interact, params string[] commands)
     {
-        Time(command, () =>
+        MeasureTime(commands, () =>
         {
-            AssertValidCommand(command);
-            var process = Start(command, Extensions.And<ProcessStartInfo>(RedirectStdin, RedirectStdout));
-            process.WaitForExit();
+            AssertValidCommand(commands);
+            var process = Start(commands, Extensions.And<ProcessStartInfo>(RedirectStdin, RedirectStdout));
             interact(process.StandardInput.WithEncoding(s_encoding), process.StandardOutput);
             Close(process);
         });
     }
 
-    private void Time(string[] command, Action action)
+    private void MeasureTime(string[] commands, Action action)
     {
-        var start = DateTime.Now;
-        try
-        {
+        if (!Options.LogGitCommandDuration)
             action();
-        }
-        finally
+        else
         {
-            var end = DateTime.Now;
-            Logger?.LogDebug("git command time [{duration}] {command}", end - start, string.Join(" ", command));
+            _stopwatch.Restart();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _stopwatch.Stop();
+                Logger?.LogDebug("git command time [{duration}ms] {command}", _stopwatch.ElapsedMilliseconds, string.Join(" ", commands));
+            }
         }
     }
 
@@ -158,11 +165,11 @@ public class GitHelper
         // there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
     }
 
-    protected GitProcess Start(string[] command, Action<ProcessStartInfo> initialize)
+    protected GitProcess Start(string[] commands, Action<ProcessStartInfo> initialize)
     {
         var startInfo = new ProcessStartInfo();
         startInfo.FileName = Options.PathToGit;
-        startInfo.SetArguments(command);
+        startInfo.SetArguments(commands);
         startInfo.CreateNoWindow = true;
         startInfo.UseShellExecute = false;
         startInfo.EnvironmentVariables["GIT_PAGER"] = "cat";
@@ -172,18 +179,32 @@ public class GitHelper
         if (!string.IsNullOrEmpty(WorkingDirectory))
             startInfo.WorkingDirectory = WorkingDirectory;
 
+        if (IsAuthenticationRequired(commands))
+            AddAuthentication(startInfo);
+
         RedirectStderr(startInfo);
         initialize(startInfo);
-        Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, startInfo.Arguments);
+        Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, Helper.MaskCredentials(startInfo.Arguments));
 
         var sysProcess = Process.Start(startInfo);
 
         if (sysProcess == null)
-            throw new InvalidOperationException("Could not start process: " + startInfo.FileName + " " + startInfo.Arguments);
+            throw new InvalidOperationException("Could not start process: " + startInfo.FileName + " " + Helper.MaskCredentials(startInfo.Arguments));
 
         var process = new GitProcess(sysProcess, Logger);
         process.ConsumeStandardError();
         return process;
+    }
+
+    private void AddAuthentication(ProcessStartInfo startInfo)
+    {
+        if (Options.Authentication != null)
+            Options.Authentication.AddAuthentication(startInfo);
+    }
+
+    private static bool IsAuthenticationRequired(string[] commands)
+    {
+        return (commands.Length > 0 && s_commandRequiringAuthentication.Contains(commands.First(), StringComparer.OrdinalIgnoreCase));
     }
 
     private static void AssertValidCommand(string[] command)

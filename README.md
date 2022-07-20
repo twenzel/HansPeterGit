@@ -111,3 +111,17 @@ repos.PushWithUpstream("origin", "main");
 ### Others
 
 There are already some other methods but not all commands are wrapped/implemented yet. Please feel free to create an issue or contribute.
+
+### Authentication
+
+Sometimes the remote repository requires an authentication (e.g. GitHub, Azure DevOps). In order to clone or push the repository you can define an authentication.
+
+```csharp
+var options = new GitOptions(workingDirectory);
+options.Authentication = new BasicAuthentication("pat", "myuserpat"); 
+
+var repository = GitRepository.Clone("https://dev.azure.com/yourOrgName/yourProject/_git/yourRepository", options);
+```
+
+Beside `BasicAuthentication` an `BearerAuthentication` is also already build-in. You can implement your own authentication by implementing the `IAuthentication` interface.
+The build-in authentication implementation uses the `-c http.extraheader' argument of the git cli to provide the credentials.

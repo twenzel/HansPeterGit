@@ -30,11 +30,11 @@
 
   <ItemGroup>
     <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
-    <None Include="..\readme.md" Pack="true" PackagePath="\"/>
+    <None Include="..\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="HansPeterGit.Tests"/>
+    <InternalsVisibleTo Include="HansPeterGit.Tests" />
   </ItemGroup>
 
   <ItemGroup>

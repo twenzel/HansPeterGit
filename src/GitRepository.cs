@@ -52,7 +52,7 @@ public class GitRepository
     /// <returns></returns>
     public static GitRepository Clone(string sourceUrl, GitOptions options)
     {
-        var helperWithoutWorkdir = new GitHelper(new GitOptions(string.Empty, options.Logger) { PathToGit = options.PathToGit });
+        var helperWithoutWorkdir = new GitHelper(options with { WorkingDirectory = string.Empty });
 
         helperWithoutWorkdir.Command("clone", sourceUrl, options.WorkingDirectory);
 

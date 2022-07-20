@@ -10,14 +10,14 @@ ILogger logger = loggerFactory.CreateLogger<Program>();
 
 var workingdir = @"c:\temp\testgit";
 
-if (Directory.Exists(workingdir))
-    Directory.Delete(workingdir, true);
+Helper.DeleteDirectory(workingdir);
 
 var options = new GitOptions(workingdir, logger);
 
 options.PathToGit = @"C:\Data\Git\ApiDocumentationPublisher\BuildArtifacts\App\git\cmd\git.exe";
+//options.Authentication = new BasicAuthentication("pat", "aaa");
 
-var repository = GitRepository.Clone("https://github.com/twenzel/HansPeterGit", options);
+var repository = GitRepository.Clone("https://dev.chg-meridian.com/DefaultCollection/API%20Documentation/_git/api-documentation-internal", options);
 
 File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 
@@ -31,3 +31,4 @@ if (status.IsDirty)
 
     logger.LogInformation("Pushed new commit {commit} to repository", commit.Id);
 }
+
