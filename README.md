@@ -124,4 +124,4 @@ var repository = GitRepository.Clone("https://dev.azure.com/yourOrgName/yourProj
 ```
 
 Beside `BasicAuthentication` an `BearerAuthentication` is also already build-in. You can implement your own authentication by implementing the `IAuthentication` interface.
-The build-in authentication implementation uses the `-c http.extraheader' argument of the git cli to provide the credentials.
+The build-in authentication implementation uses the '-c http.extraheader' argument of the git cli to provide the credentials.
