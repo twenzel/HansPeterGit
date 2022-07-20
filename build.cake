@@ -42,7 +42,7 @@ Setup(context =>
 	Information($"Package output directory: {packageOutputDir.FullPath}");
 	Information($"Local build: {isLocalBuild}");
 	Information($"Is pull request: {isPullRequest}");	
-	Information($"Is release creation: {isReleaseCreation}");	
+	Information($"Is release creation: {isReleaseCreation}");
 });
 
 Task("Clean")
@@ -153,15 +153,15 @@ Task("SonarEnd")
 	
 		Information($"Upload packages from {packageOutputDir.FullPath}");
 
-		// Get the paths to the packages.
-		var packages = GetFiles(packageOutputDir.CombineWithFilePath("*.*nupkg").ToString());
+		// Get the paths to the packages ordered by the file names in order to get the nupkg first.
+		var packages = GetFiles(packageOutputDir.CombineWithFilePath("*.*nupkg").ToString()).OrderBy(x => x.FullPath).ToArray();
 
-		if (packages.Count == 0)
+		if (packages.Length == 0)
 		{
 			Error("No packages found to upload");
 			return;
 		}
-
+		
 		// Push the package.
 		NuGetPush(packages, new NuGetPushSettings {
 			Source = nugetPublishFeed,
