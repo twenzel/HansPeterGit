@@ -15,13 +15,29 @@ public class GitHelper
     /// </summary>
     private static readonly Encoding s_encoding = new UTF8Encoding(false, true);
 
-    public string WorkingDirectory { get; }
-    public ILogger? Logger { get; }
+    /// <summary>
+    /// Gets the current working directory of the Git process.
+    /// </summary>
+    public string WorkingDirectory => Options.WorkingDirectory;
 
-    public GitHelper(string workingDirectory, ILogger? logger = null)
+    /// <summary>
+    /// Gets the logger instance.
+    /// </summary>
+    public ILogger? Logger => Options.Logger;
+
+    /// <summary>
+    /// Gets the options.
+    /// </summary>
+    public GitOptions Options { get; }
+
+    /// <summary>
+    /// Creates a new instance of the helper
+    /// </summary>
+    /// <param name="options">The options</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public GitHelper(GitOptions options)
     {
-        WorkingDirectory = workingDirectory;
-        Logger = logger;
+        Options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <summary>
@@ -145,15 +161,18 @@ public class GitHelper
     protected GitProcess Start(string[] command, Action<ProcessStartInfo> initialize)
     {
         var startInfo = new ProcessStartInfo();
-        startInfo.FileName = "git";
+        startInfo.FileName = Options.PathToGit;
         startInfo.SetArguments(command);
         startInfo.CreateNoWindow = true;
         startInfo.UseShellExecute = false;
         startInfo.EnvironmentVariables["GIT_PAGER"] = "cat";
+
+        Options.SetEnvironmentVariables?.Invoke(startInfo.EnvironmentVariables);
+
         if (!string.IsNullOrEmpty(WorkingDirectory))
             startInfo.WorkingDirectory = WorkingDirectory;
 
-        GitHelper.RedirectStderr(startInfo);
+        RedirectStderr(startInfo);
         initialize(startInfo);
         Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, startInfo.Arguments);
 

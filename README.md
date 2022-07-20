@@ -19,7 +19,7 @@ The project aim is to get rid of the stale library `libgit2sharp` and provide an
 
 ## Dependencies
 
-An installed version of git should be accessible via path.
+An installed version of git should be accessible via path or can be defined via the `GitOptions.PathToGit` property.
 
 ## Install
 

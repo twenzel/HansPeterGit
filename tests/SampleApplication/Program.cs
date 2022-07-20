@@ -13,7 +13,11 @@ var workingdir = @"c:\temp\testgit";
 if (Directory.Exists(workingdir))
     Directory.Delete(workingdir, true);
 
-var repository = GitRepository.Clone("https://github.com/twenzel/HansPeterGit", workingdir, logger);
+var options = new GitOptions(workingdir, logger);
+
+options.PathToGit = @"C:\Data\Git\ApiDocumentationPublisher\BuildArtifacts\App\git\cmd\git.exe";
+
+var repository = GitRepository.Clone("https://github.com/twenzel/HansPeterGit", options);
 
 File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 

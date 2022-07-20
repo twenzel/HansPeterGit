@@ -7,11 +7,29 @@ public class GitRepository
 {
     private readonly GitHelper _helper;
 
+    /// <summary>
+    /// Gets the current working directory of the Git process.
+    /// </summary>
     public string WorkingDirectory => _helper.WorkingDirectory;
 
+    /// <summary>
+    /// Creates a new instance of the repository.
+    /// </summary>
+    /// <param name="workingDir">Local path to of the repository.</param>
+    /// <param name="logger">The logger instance<.</param>
     public GitRepository(string workingDir, ILogger? logger = null)
+        : this(new GitOptions(workingDir, logger))
     {
-        _helper = new GitHelper(workingDir, logger);
+
+    }
+
+    /// <summary>
+    /// Creates a new instance of the repository.
+    /// </summary>
+    /// <param name="options">The git options.</param>
+    public GitRepository(GitOptions options)
+    {
+        _helper = new GitHelper(options);
     }
 
     /// <summary>
@@ -19,14 +37,26 @@ public class GitRepository
     /// </summary>
     /// <param name="sourceUrl">URI for the remote repository.</param>
     /// <param name="workingDir">Local path to clone into.</param>
+    /// <param name="logger">The logger instance<./param>
     /// <returns></returns>
     public static GitRepository Clone(string sourceUrl, string workingDir, ILogger? logger = null)
     {
-        var helperWithoutWorkdir = new GitHelper(string.Empty, logger);
+        return Clone(sourceUrl, new GitOptions(workingDir, logger));
+    }
 
-        helperWithoutWorkdir.Command("clone", sourceUrl, workingDir);
+    /// <summary>
+    /// Clones a repository.
+    /// </summary>
+    /// <param name="sourceUrl">URI for the remote repository.</param>
+    /// <param name="options">The git options.</param>
+    /// <returns></returns>
+    public static GitRepository Clone(string sourceUrl, GitOptions options)
+    {
+        var helperWithoutWorkdir = new GitHelper(new GitOptions(string.Empty, options.Logger) { PathToGit = options.PathToGit });
 
-        return new GitRepository(workingDir, logger);
+        helperWithoutWorkdir.Command("clone", sourceUrl, options.WorkingDirectory);
+
+        return new GitRepository(options);
     }
 
     /// <summary>
