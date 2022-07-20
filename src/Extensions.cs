@@ -3,7 +3,10 @@ using System.Text;
 
 namespace HansPeterGit;
 
-public static class Extensions
+/// <summary>
+/// Internal extensions
+/// </summary>
+internal static class Extensions
 {
     /// <summary>
     /// The encoding used by a stream is a read-only property. Use this method to

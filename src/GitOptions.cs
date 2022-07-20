@@ -3,6 +3,10 @@ using HansPeterGit.Authentication;
 using Microsoft.Extensions.Logging;
 
 namespace HansPeterGit;
+
+/// <summary>
+/// Defines global git options
+/// </summary>
 public record GitOptions
 {
     /// <summary>

@@ -1,0 +1,386 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HansPeterGit</name>
+    </assembly>
+    <members>
+        <member name="T:HansPeterGit.Authentication.BasicAuthentication">
+            <summary>
+            Basic authentication
+            </summary>
+        </member>
+        <member name="T:HansPeterGit.Authentication.BearerAuthentication">
+            <summary>
+            Bearer authentication
+            </summary>
+        </member>
+        <member name="T:HansPeterGit.Authentication.IAuthentication">
+            <summary>
+            Interface to provide authentication for git operations
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.Authentication.IAuthentication.AddAuthentication(System.Diagnostics.ProcessStartInfo)">
+            <summary>
+            Add authentication to the git process
+            </summary>
+            <param name="startInfo">The git process start info.</param>
+        </member>
+        <member name="M:HansPeterGit.Extensions.WithEncoding(System.IO.StreamWriter,System.Text.Encoding)">
+            <summary>
+            The encoding used by a stream is a read-only property. Use this method to
+            create a new stream based on <paramref name="stream"/> that uses
+            the given <paramref name="encoding"/> instead.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.Unaltered">
+            <summary>
+            The file hasn't been modified.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.NewInIndex">
+            <summary>
+            New file has been added to the Index. It's unknown from the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.ModifiedInIndex">
+            <summary>
+            New version of a file has been added to the Index. A previous version exists in the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.DeletedFromIndex">
+            <summary>
+            The deletion of a file has been promoted from the working directory to the Index. A previous version exists in the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.RenamedInIndex">
+            <summary>
+            The renaming of a file has been promoted from the working directory to the Index. A previous version exists in the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.TypeChangeInIndex">
+            <summary>
+            A change in type for a file has been promoted from the working directory to the Index. A previous version exists in the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.NewInWorkdir">
+            <summary>
+            New file in the working directory, unknown from the Index and the Head.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.ModifiedInWorkdir">
+            <summary>
+            The file has been updated in the working directory. A previous version exists in the Index.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.DeletedFromWorkdir">
+            <summary>
+            The file has been deleted from the working directory. A previous version exists in the Index.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.TypeChangeInWorkdir">
+            <summary>
+            The file type has been changed in the working directory. A previous version exists in the Index.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.RenamedInWorkdir">
+            <summary>
+            The file has been renamed in the working directory.  The previous version at the previous name exists in the Index.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.Unreadable">
+            <summary>
+            The file is unreadable in the working directory.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.Ignored">
+            <summary>
+            The file is <see cref="F:HansPeterGit.FileStatus.NewInWorkdir"/> but its name and/or path matches an exclude pattern in a <c>gitignore</c> file.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.Conflicted">
+            <summary>
+            The file is <see cref="F:HansPeterGit.FileStatus.Conflicted"/> due to a merge.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.FileStatus.Nonexistent">
+            <summary>
+            The file doesn't exist.
+            </summary>
+        </member>
+        <member name="F:HansPeterGit.GitHelper.s_encoding">
+            <summary>
+            Starting with version 1.7.10, Git uses UTF-8.
+            Use this encoding for Git input and output.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitHelper.WorkingDirectory">
+            <summary>
+            Gets the current working directory of the Git process.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitHelper.Logger">
+            <summary>
+            Gets the logger instance.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitHelper.Options">
+            <summary>
+            Gets the options.
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitHelper.#ctor(HansPeterGit.GitOptions)">
+            <summary>
+            Creates a new instance of the helper
+            </summary>
+            <param name="options">The options</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:HansPeterGit.GitHelper.Command(System.String[])">
+            <summary>
+            Runs the given git command, and returns the contents of its STDOUT.
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitHelper.CommandOneline(System.String[])">
+            <summary>
+            Runs the given git command, and returns the first line of its STDOUT.
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitHelper.CommandOutputPipe(System.Action{System.IO.TextReader},System.String[])">
+            <summary>
+            Runs the given git command, and redirects STDOUT to the provided action.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.Logger">
+            <summary>
+            Gets or sets the logger instance
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.WorkingDirectory">
+            <summary>
+            Gets the working directory
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.PathToGit">
+            <summary>
+            Gets or sets the path to git executable
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.SetEnvironmentVariables">
+            <summary>
+            Action to define environment variables for the git process.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.LogGitCommandDuration">
+            <summary>
+            Get or sets whether the git command execution time should be logged
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.GitOptions.Authentication">
+            <summary>
+            Gets or sets an authentication used for some git commands
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitOptions.#ctor(System.String)">
+            <summary>
+            Creates new instance of the options
+            </summary>
+            <param name="workingDirectory"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:HansPeterGit.GitOptions.#ctor(System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Creates new instance of the options
+            </summary>
+            <param name="workingDirectory"></param>
+            <param name="logger">The logger instance</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:HansPeterGit.GitRepository.WorkingDirectory">
+            <summary>
+            Gets the current working directory of the Git process.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:HansPeterGit.GitRepository.#ctor(System.String,Microsoft.Extensions.Logging.ILogger)" -->
+        <member name="M:HansPeterGit.GitRepository.#ctor(HansPeterGit.GitOptions)">
+            <summary>
+            Creates a new instance of the repository.
+            </summary>
+            <param name="options">The git options.</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:HansPeterGit.GitRepository.Clone(System.String,System.String,Microsoft.Extensions.Logging.ILogger)" -->
+        <member name="M:HansPeterGit.GitRepository.Clone(System.String,HansPeterGit.GitOptions)">
+            <summary>
+            Clones a repository.
+            </summary>
+            <param name="sourceUrl">URI for the remote repository.</param>
+            <param name="options">The git options.</param>
+            <returns></returns>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Init">
+            <summary>
+            Initializes a new repository
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Init(System.String)">
+            <summary>
+            Initializes a new repository
+            </summary>
+            <param name="initialBranchName">Name for the initial branch in the newly created repository</param>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.StageAll">
+            <summary>
+            Executes a "git add . -A"
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Commit(System.String)">
+            <summary>
+            Creates a commit with the given message
+            </summary>
+            <param name="message">The commit message</param>
+            <returns>The new commit id</returns>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Commit(System.String,HansPeterGit.Author)">
+            <summary>
+            Creates a commit with the given message and author
+            </summary>
+            <param name="message">The commit message</param>
+            <param name="author">The author of this commit</param>
+            <returns>The new commit id</returns>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Push">
+            <summary>
+            Pushes all local changes.
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.Push(System.String,System.String)">
+            <summary>
+            Pushes all local changes to the given remote and branch.
+            </summary>
+            <param name="remoteName"></param>
+            <param name="branch"></param>
+        </member>
+        <member name="M:HansPeterGit.GitRepository.PushWithUpstream(System.String,System.String)">
+            <summary>
+            Pushes all local changes and adds an upstream reference.
+            </summary>
+            <param name="remoteName"></param>
+            <param name="branch"></param>
+        </member>
+        <member name="M:HansPeterGit.Helper.FormatWithCredentials(System.String,System.String,System.String)">
+            <summary>
+            Adds the username and password to the url
+            </summary>
+            <param name="url"></param>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:HansPeterGit.Helper.DeleteDirectory(System.String)">
+            <summary>
+            Deletes a directory recursive.
+            </summary>
+            <remarks>
+            Git (and libgit2, and thus LibGit2Sharp) create object files without write permission, and this is by-design. As a consequence, you must make them writable before removing them.
+            </remarks>
+            <param name="directory">The directory to delete with sub folders</param>
+        </member>
+        <member name="M:HansPeterGit.Helper.MaskCredentials(System.String)">
+            <summary>
+            Masks any credentials in the given arguments
+            </summary>
+            <param name="arguments"></param>
+            <returns></returns>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Branch">
+            <summary>
+            Gets the current branch
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Commit">
+            <summary>
+            Gets the current commit id
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Added">
+            <summary>
+            List of files added to the index, which are not in the current commit
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Staged">
+            <summary>
+            List of files added to the index, which are already in the current commit with different content
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Removed">
+            <summary>
+            List of files removed from the index but are existent in the current commit
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Missing">
+            <summary>
+            List of files existent in the index but are missing in the working directory
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Modified">
+            <summary>
+            List of files with unstaged modifications. A file may be modified and staged at the same time if it has been modified after adding.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Untracked">
+            <summary>
+            List of files existing in the working directory but are neither tracked in the index nor in the current commit.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Ignored">
+            <summary>
+            List of files existing in the working directory that are ignored.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.RenamedInIndex">
+            <summary>
+            List of files that were renamed and staged.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.RenamedInWorkDir">
+            <summary>
+            List of files that were renamed in the working directory but have not been staged.
+            </summary>
+        </member>
+        <member name="P:HansPeterGit.RepositoryStatus.Unchanged">
+            <summary>
+            List of files that were unmodified in the working directory.
+            </summary>
+        </member>
+        <member name="M:HansPeterGit.RepositoryStatus.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns></returns>		
+        </member>
+        <member name="M:HansPeterGit.RepositoryStatus.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="P:HansPeterGit.StatusOptions.IncludeUnaltered">
+            <summary>
+            Include unaltered files when scanning for status
+            </summary>
+            <remarks>Unaltered meaning the file is identical in the working directory, the index and HEAD.</remarks>
+        </member>
+        <member name="P:HansPeterGit.StatusOptions.IncludeIgnored">
+            <summary>
+            Include ignored files when scanning for status
+            </summary>
+            <remarks>ignored meaning present in .gitignore. </remarks>
+        </member>
+        <member name="P:HansPeterGit.StatusOptions.IncludeUntracked">
+            <summary>
+            Include untracked files when scanning for status.
+            </summary>
+        </member>
+    </members>
+</doc>

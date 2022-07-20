@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace HansPeterGit;
 
+/// <summary>
+/// Helper class to start git processes
+/// </summary>
 public class GitHelper
 {
     private static readonly Regex s_validCommandName = new Regex("^[a-z0-9A-Z_-]+$");
@@ -85,6 +88,9 @@ public class GitHelper
         });
     }
 
+    /// <summary>
+    /// Runs the given git command and provides a text writer to define console input
+    /// </summary>
     public void CommandInputPipe(Action<TextWriter> action, params string[] commands)
     {
         MeasureTime(commands, () =>
@@ -96,6 +102,9 @@ public class GitHelper
         });
     }
 
+    /// <summary>
+    /// Runs the given git command and provides a text writer to define console input and a reader to read the console
+    /// </summary>
     public void CommandInputOutputPipe(Action<TextWriter, TextReader> interact, params string[] commands)
     {
         MeasureTime(commands, () =>
@@ -165,7 +174,7 @@ public class GitHelper
         // there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
     }
 
-    protected GitProcess Start(string[] commands, Action<ProcessStartInfo> initialize)
+    private GitProcess Start(string[] commands, Action<ProcessStartInfo> initialize)
     {
         var startInfo = new ProcessStartInfo();
         startInfo.FileName = Options.PathToGit;
@@ -213,7 +222,7 @@ public class GitHelper
             throw new InvalidOperationException("bad git command: " + (command.Length == 0 ? "" : command[0]));
     }
 
-    protected class GitProcess
+    internal class GitProcess
     {
         private readonly Process _process;
 

@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace HansPeterGit;
 
+/// <summary>
+/// Abstracts the git repository and provides interaction functionality
+/// </summary>
 public class GitRepository
 {
     private readonly GitHelper _helper;
@@ -16,7 +19,7 @@ public class GitRepository
     /// Creates a new instance of the repository.
     /// </summary>
     /// <param name="workingDir">Local path to of the repository.</param>
-    /// <param name="logger">The logger instance<.</param>
+    /// <param name="logger">The logger instance.</param>
     public GitRepository(string workingDir, ILogger? logger = null)
         : this(new GitOptions(workingDir, logger))
     {
@@ -37,7 +40,7 @@ public class GitRepository
     /// </summary>
     /// <param name="sourceUrl">URI for the remote repository.</param>
     /// <param name="workingDir">Local path to clone into.</param>
-    /// <param name="logger">The logger instance<./param>
+    /// <param name="logger">The logger instance</param>
     /// <returns></returns>
     public static GitRepository Clone(string sourceUrl, string workingDir, ILogger? logger = null)
     {
@@ -80,21 +83,39 @@ public class GitRepository
         _helper.Command("init", "-b", initialBranchName);
     }
 
+    /// <summary>
+    /// Remove the given remote
+    /// </summary>
+    /// <param name="name">Name of the remote</param>
     public void RemoteRemove(string name)
     {
         _helper.Command("remote", "remove", name);
     }
 
+    /// <summary>
+    /// Add a new remote
+    /// </summary>
+    /// <param name="name">Name of the remote</param>
+    /// <param name="url">Url of the remote repository</param>
     public void RemoteAdd(string name, string url)
     {
         _helper.Command("remote", "add", name, url);
     }
 
+    /// <summary>
+    /// Fetches a remote
+    /// </summary>
+    /// <param name="name">Name of the remote</param>
     public void Fetch(string name)
     {
         _helper.Command("fetch", name);
     }
 
+    /// <summary>
+    /// Resets the current HEAD to the given commit
+    /// </summary>
+    /// <param name="name">Name of the commit</param>
+    /// <param name="hard">True for hard reset</param>
     public void Reset(string name, bool hard = false)
     {
         var commands = new List<string>();
@@ -117,31 +138,58 @@ public class GitRepository
         Add(".", "-A");
     }
 
+    /// <summary>
+    /// Stage the given file
+    /// </summary>
+    /// <param name="path">Path of the file to stage</param>
     public void Add(string path)
     {
         _helper.Command("add", path);
     }
 
+    /// <summary>
+    /// Stage the given file
+    /// </summary>
+    /// <param name="path">Path of the file to stage</param>
+    /// <param name="option">Staging options</param>
     public void Add(string path, string option)
     {
         _helper.Command("add", path, option);
     }
 
+    /// <summary>
+    /// Restore the given file
+    /// </summary>
+    /// <param name="path">Path of the file to restore</param>
     public void Restore(string path)
     {
         _helper.Command("restore", path);
     }
 
+    /// <summary>
+    /// Unstage the given file
+    /// </summary>
+    /// <param name="path">Path of the file to unstage</param>
     public void Unstage(string path)
     {
         _helper.Command("restore", "--staged", path);
     }
 
+    /// <summary>
+    /// Gets the current repository status. Executed with default options.
+    /// </summary>
+    /// <returns></returns>
     public RepositoryStatus GetStatus()
     {
         return GetStatus(new StatusOptions());
     }
 
+    /// <summary>
+    /// Gets the current repository status using the given options.
+    /// </summary>
+    /// <param name="options">Options to retrieve the repository status.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public RepositoryStatus GetStatus(StatusOptions options)
     {
         var commands = new List<string>();

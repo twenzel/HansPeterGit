@@ -4,6 +4,9 @@ using System.Globalization;
 
 namespace HansPeterGit;
 
+/// <summary>
+/// Contains information about the repository status
+/// </summary>
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class RepositoryStatus : IEnumerable<StatusEntry>
 {
@@ -21,6 +24,9 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
 
     private static readonly Dictionary<FileStatus, Action<RepositoryStatus, StatusEntry>> s_mapper = CreateMapper();
 
+    /// <summary>
+    /// Gets whether the current status is dirty (aka changes exists)
+    /// </summary>
     public bool IsDirty { get; }
 
     /// <summary>
@@ -33,6 +39,12 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
     /// </summary>
     public string Commit { get; }
 
+    /// <summary>
+    /// Gets the status entry by the given path
+    /// </summary>
+    /// <param name="path">Path to retrieve the entry</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public StatusEntry this[string path]
     {
         get

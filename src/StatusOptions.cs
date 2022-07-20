@@ -1,5 +1,8 @@
 ﻿namespace HansPeterGit;
 
+/// <summary>
+/// Options to control the behavior of the status command
+/// </summary>
 public class StatusOptions
 {
     /// <summary>

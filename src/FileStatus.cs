@@ -1,5 +1,8 @@
 ﻿namespace HansPeterGit;
 
+/// <summary>
+/// Status of a file within the repository
+/// </summary>
 [Flags]
 public enum FileStatus
 {

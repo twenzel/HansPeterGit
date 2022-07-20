@@ -2,6 +2,9 @@
 
 namespace HansPeterGit;
 
+/// <summary>
+/// Little helper class
+/// </summary>
 public static class Helper
 {
     private static readonly Regex s_credentials = new Regex("\"AUTHORIZATION:(?<authType>.*) (?<credential>.*)\"", RegexOptions.Compiled);
