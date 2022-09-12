@@ -14,10 +14,11 @@ Helper.DeleteDirectory(workingdir);
 
 var options = new GitOptions(workingdir, logger);
 
-options.PathToGit = @"C:\Data\Git\ApiDocumentationPublisher\BuildArtifacts\App\git\cmd\git.exe";
+options.PathToGit = @"C:\Data\Git\ApiDocumentationPublisher\BuildArtifacts\Temp\App\git\cmd\git.exe";
 //options.Authentication = new BasicAuthentication("pat", "aaa");
 
-var repository = GitRepository.Clone("https://dev.chg-meridian.com/DefaultCollection/API%20Documentation/_git/api-documentation-internal", options);
+var repository = GitRepository.Clone("https://github.com/dotnet/aspnetcore.git", options);
+repository.Checkout("release/6.0");
 
 File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 

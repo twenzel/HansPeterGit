@@ -131,8 +131,7 @@ public class GitRepository
 
     /// <summary>
     /// Executes a "git add . -A"
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
+    /// </summary>    
     public void StageAll()
     {
         Add(".", "-A");
@@ -243,7 +242,6 @@ public class GitRepository
         _helper.Command("push");
     }
 
-
     /// <summary>
     /// Pushes all local changes to the given remote and branch.
     /// </summary>
@@ -262,5 +260,41 @@ public class GitRepository
     public void PushWithUpstream(string remoteName, string branch)
     {
         _helper.Command("push", "--set-upstream", remoteName, branch);
+    }
+
+    /// <summary>
+    /// Switch the current branch
+    /// </summary>
+    /// <param name="branch">The branch to switch to.</param>
+    public void Switch(string branch)
+    {
+        _helper.Command("switch", branch);
+    }
+
+    /// <summary>
+    /// Switch the current branch
+    /// </summary>
+    /// <param name="branch">The branch to switch to.</param>
+    public void Checkout(string branch)
+    {
+        _helper.Command("checkout", branch);
+    }
+
+    /// <summary>
+    /// Switch the current branch
+    /// </summary>
+    /// <param name="branch">The branch to switch to.</param>
+    /// <param name="options">Options for the checkout command</param>
+    public void Checkout(string branch, params string[] options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add("checkout");
+
+        if (options != null && options.Length > 0)
+            commandOptions.AddRange(options);
+
+        commandOptions.Add(branch);
+
+        _helper.Command(commandOptions.ToArray());
     }
 }
