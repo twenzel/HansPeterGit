@@ -135,6 +135,37 @@ public class GitRepository
     }
 
     /// <summary>
+    /// Remove untracked files from the working tree
+    /// </summary>
+    public void Clean()
+    {
+        _helper.Command("clean");
+    }
+
+    /// <summary>
+    /// Remove untracked files from the working tree
+    /// </summary>
+    /// <param name="options">Options for the clean command</param>
+    public void Clean(params string[] options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add("clean");
+
+        if (options != null && options.Length > 0)
+            commandOptions.AddRange(options);
+
+        _helper.Command(commandOptions.ToArray());
+    }
+
+    /// <summary>
+    /// Executes a "git clean -fdx"
+    /// </summary>
+    public void CleanAll()
+    {
+        Clean("-fdx");
+    }
+
+    /// <summary>
     /// Resets the current HEAD to the given commit
     /// </summary>
     /// <param name="name">Name of the commit</param>
