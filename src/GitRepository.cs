@@ -112,6 +112,29 @@ public class GitRepository
     }
 
     /// <summary>
+    /// Fetch from and integrate with another repository or a local branch
+    /// </summary>
+    public void Pull()
+    {
+        _helper.Command("pull");
+    }
+
+    /// <summary>
+    /// Fetch from and integrate with another repository or a local branch
+    /// </summary>
+    /// <param name="options">Options for the pull command</param>
+    public void Pull(params string[] options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add("pull");
+
+        if (options != null && options.Length > 0)
+            commandOptions.AddRange(options);
+
+        _helper.Command(commandOptions.ToArray());
+    }
+
+    /// <summary>
     /// Resets the current HEAD to the given commit
     /// </summary>
     /// <param name="name">Name of the commit</param>
@@ -131,7 +154,7 @@ public class GitRepository
 
     /// <summary>
     /// Executes a "git add . -A"
-    /// </summary>    
+    /// </summary>
     public void StageAll()
     {
         Add(".", "-A");
