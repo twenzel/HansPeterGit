@@ -378,4 +378,31 @@ public class GitRepository
 
         _helper.Command(commandOptions.ToArray());
     }
+
+    /// <summary>
+    /// Creates a tag
+    /// </summary>
+    /// <param name="tagName">Name of the tag.</param>
+    public void Tag(string tagName)
+    {
+        _helper.Command("tag", tagName);
+    }
+
+    /// <summary>
+    /// Create, list, delete or verify a tag
+    /// </summary>
+    /// <param name="tagName">Name of the tag.</param>
+    /// <param name="options">Options for the tag command</param>
+    public void Tag(string tagName, params string[] options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add("tag");
+
+        if (options != null && options.Length > 0)
+            commandOptions.AddRange(options);
+
+        commandOptions.Add(tagName);
+
+        _helper.Command(commandOptions.ToArray());
+    }
 }
