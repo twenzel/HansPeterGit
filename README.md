@@ -112,6 +112,12 @@ repos.PushWithUpstream("origin", "main");
 
 There are already some other methods but not all commands are wrapped/implemented yet. Please feel free to create an issue or contribute.
 
+For any other git command you can use the generic `ExecuteCommand` method.
+
+```csharp
+var result = repos.ExecuteCommand("revert");
+```
+
 ### Authentication
 
 Sometimes the remote repository requires an authentication (e.g. GitHub, Azure DevOps). In order to clone or push the repository you can define an authentication.
