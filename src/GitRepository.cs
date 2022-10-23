@@ -351,4 +351,31 @@ public class GitRepository
 
         _helper.Command(commandOptions.ToArray());
     }
+
+    /// <summary>
+    /// Remove files from the working tree and from the index
+    /// </summary>
+    /// <param name="path">Path of the file(s) to remove</param>
+    public void Remove(string path)
+    {
+        _helper.Command("rm", path);
+    }
+
+    /// <summary>
+    /// Remove files from the working tree and from the index
+    /// </summary>
+    /// <param name="path">Path of the file(s) to remove</param>
+    /// <param name="options">Options for the rm command</param>
+    public void Remove(string path, params string[] options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add("rm");
+
+        if (options != null && options.Length > 0)
+            commandOptions.AddRange(options);
+
+        commandOptions.Add(path);
+
+        _helper.Command(commandOptions.ToArray());
+    }
 }
