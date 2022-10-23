@@ -49,6 +49,20 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
+    public string? Command(string command, GitCommandOptions? options)
+    {
+        var commandOptions = new List<string>();
+        commandOptions.Add(command);
+
+        if (options != null)
+            GitCommandOptions.AddToOptions(options, commandOptions);
+
+        return Command(commandOptions.ToArray());
+    }
+
+    /// <summary>
+    /// Runs the given git command, and returns the contents of its STDOUT.
+    /// </summary>
     public string? Command(params string[] commands)
     {
         string? output = null;

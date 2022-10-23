@@ -1,4 +1,5 @@
-﻿using HansPeterGit.Parser;
+﻿using HansPeterGit.Options;
+using HansPeterGit.Parser;
 using Microsoft.Extensions.Logging;
 
 namespace HansPeterGit;
@@ -109,6 +110,14 @@ public class GitRepository
     public void Fetch(string name)
     {
         _helper.Command("fetch", name);
+    }
+
+    /// <summary>
+    /// Fetches a remote
+    /// </summary>
+    public void Fetch(FetchOptions? options)
+    {
+        _helper.Command("fetch", options);
     }
 
     /// <summary>
@@ -404,5 +413,16 @@ public class GitRepository
         commandOptions.Add(tagName);
 
         _helper.Command(commandOptions.ToArray());
+    }
+
+    /// <summary>
+    /// Execute any git command
+    /// </summary>
+    /// <param name="command">The command name like pull or revert</param>
+    /// <param name="options">Options for that command</param>
+    /// <returns></returns>
+    public string? ExecuteCommand(string command, GitCommandOptions? options)
+    {
+        return _helper.Command(command, options);
     }
 }
