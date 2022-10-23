@@ -1,4 +1,5 @@
-﻿using HansPeterGit.Options;
+﻿using System.Text.RegularExpressions;
+using HansPeterGit.Options;
 using HansPeterGit.Parser;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,7 @@ namespace HansPeterGit;
 /// </summary>
 public class GitRepository
 {
+    private static Regex _gitBranchRegex = new Regex(@"(?<prefix>\*\s*|\s*)(?<branch>.*)", RegexOptions.Compiled);
     private readonly GitHelper _helper;
 
     /// <summary>
@@ -235,6 +237,48 @@ public class GitRepository
     public void Unstage(string path)
     {
         _helper.Command("restore", "--staged", path);
+    }
+
+    /// <summary>
+    /// Gets the local branches of the repository.
+    /// </summary>
+    /// <returns>An <see cref="IEnumerable{T}"/> with the branch names.</returns>
+    public IEnumerable<string> GetBranches()
+    {
+        return GetBranches(false);
+    }
+
+    /// <summary>
+    /// Gets the local or remote branches of the repository.
+    /// </summary>
+    /// <param name="remotes"><c>true</c> if the remote branches shall be retrieved; <c>false</c> to retrieve the local
+    /// branches.</param>
+    /// <returns>An <see cref="IEnumerable{T}"/> with the branch names.</returns>
+    public IEnumerable<string> GetBranches(bool remotes)
+    {
+        var branches = new List<string>();
+        var commands = new List<string> { "branch" };
+        if (remotes)
+        {
+            commands.Add("-r");
+        }
+
+        var output = _helper.Command(commands.ToArray());
+        if (output == null)
+        {
+            return branches;
+        }
+
+        var matches = _gitBranchRegex.Matches(output);
+
+        branches.AddRange(
+            from Match match in matches
+            select match.Groups["branch"].Value
+                into branch
+            where string.Empty != branch
+            select branch);
+
+        return branches;
     }
 
     /// <summary>
