@@ -22,6 +22,7 @@ repository.Checkout("master");
 //repository.Checkout("tags/v1.1.5");
 
 repository.Pull();
+repository.CleanAll();
 
 File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 
