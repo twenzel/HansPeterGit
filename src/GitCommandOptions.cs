@@ -45,7 +45,7 @@ public abstract class GitCommandOptions
                 }
                 else if (option.OptionName != null)
                 {
-                    commandOptions.Add($"{option.OptionName} {value}");
+                    commandOptions.Add($"{option.OptionName}={value}");
                 }
                 else if (option.OptionName == null)
                 {
