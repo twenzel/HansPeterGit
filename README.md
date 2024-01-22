@@ -66,6 +66,36 @@ var fileInfo = status["src/newFile.json"];
 
 ```
 
+### Get branches
+
+Using the **GetBranches()** method to retrieve the local branches of the current repository.
+
+```csharp
+var repos = new GitRepository(@"D:\TestSample");
+var status = repos.GetBranches();
+
+Console.WriteLine("Branches:");
+foreach (var branch in branches)
+{
+    Console.WriteLine($"{branch.Name}");
+}
+```
+
+To retrieve the remote branches use the **GetBranches(bool)** method with the value "true" ("false" will retrieve the local branches).
+
+```csharp
+var repos = new GitRepository(@"D:\TestSample");
+var status = repos.GetBranches(true);
+
+Console.WriteLine("Remote branches:");
+foreach (var branch in branches)
+{
+    Console.WriteLine($"{branch.Name}");
+}
+```
+
+To retrieve only branch names please use the **GetBranchNames(bool)** method.
+
 ### Staging/Restore
 
 To stage the current work tree use any of the **Stage/Add/Restore** methods.

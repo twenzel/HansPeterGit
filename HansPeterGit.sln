@@ -5,9 +5,9 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HansPeterGit", "src\HansPeterGit.csproj", "{0BE1494F-8765-4EBF-9F3D-8233C04BF1E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansPeterGit.Tests", "tests\HansPeterGit.Tests\HansPeterGit.Tests.csproj", "{4B05E2B4-9965-4946-8E4E-71DBF9406646}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HansPeterGit.Tests", "tests\HansPeterGit.Tests\HansPeterGit.Tests.csproj", "{4B05E2B4-9965-4946-8E4E-71DBF9406646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApplication", "tests\SampleApplication\SampleApplication.csproj", "{1AC0ED96-E924-494A-826A-612467F18BDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApplication", "tests\SampleApplication\SampleApplication.csproj", "{1AC0ED96-E924-494A-826A-612467F18BDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
