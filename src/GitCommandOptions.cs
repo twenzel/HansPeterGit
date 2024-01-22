@@ -74,7 +74,7 @@ public abstract class GitCommandOptions
             }
 
             // ensure options with names comes first
-            options = options.OrderByDescending(o => o.OptionName).ThenBy(o => o.PropertyInfo.Name).ToList();
+            options = [.. options.OrderByDescending(o => o.OptionName).ThenBy(o => o.PropertyInfo.Name)];
 
             s_properties.Add(optionsType, options);
         }

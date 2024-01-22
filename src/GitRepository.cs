@@ -1,4 +1,6 @@
-﻿using HansPeterGit.Options;
+﻿using System.Text.RegularExpressions;
+using HansPeterGit.Models;
+using HansPeterGit.Options;
 using HansPeterGit.Parser;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +12,7 @@ namespace HansPeterGit;
 public class GitRepository
 {
     private readonly GitHelper _helper;
+    private static readonly Regex s_gitBranchRegex = new(@"(?<prefix>\*\s*|\s*)(?<branch>.*)", RegexOptions.Compiled);
 
     /// <summary>
     /// Gets the current working directory of the Git process.
@@ -236,6 +239,107 @@ public class GitRepository
     {
         _helper.Command("restore", "--staged", path);
     }
+
+    /// <summary>
+    /// Gets the local branches of the repository.
+    /// </summary>
+    /// <returns>A list with the branch.</returns>
+    public IEnumerable<GitBranch> GetBranches()
+    {
+        return GetBranches(false);
+    }
+
+    /// <summary>
+    /// Gets the local or remote branches of the repository.
+    /// </summary>
+    /// <param name="remotes"><c>true</c> if the remote branches shall be retrieved; <c>false</c> to retrieve the local
+    /// branches.</param>
+    /// <param name="includeDetails"><c>true</c> to include detail informations of the branches</param>
+    /// <returns>A list with the branches.</returns>
+    public IEnumerable<GitBranch> GetBranches(bool remotes, bool includeDetails = true)
+    {
+        var branches = new List<GitBranch>();
+        var commands = new List<string> { "branch" };
+        if (remotes && includeDetails)
+            commands.Add("-vvr");
+        else if (remotes)
+            commands.Add("-r");
+        else if (includeDetails)
+            commands.Add("-vv");
+
+        var output = _helper.Command(commands.ToArray());
+        if (output == null)
+            return branches;
+
+        var matches = s_gitBranchRegex.Matches(output);
+
+        foreach (Match match in matches)
+        {
+            var branch = match.Groups["branch"].Value;
+            var prefix = match.Groups["prefix"].Value;
+            if (!string.IsNullOrWhiteSpace(branch) && !branch.Contains(" -> "))
+                branches.Add(CreateBranchInfo(remotes, branch, prefix.Trim()));
+        }
+
+        return branches;
+    }
+
+    private static GitBranch CreateBranchInfo(bool remotes, string branch, string prefix)
+    {
+        var hash = string.Empty;
+        var message = string.Empty;
+        var remote = string.Empty;
+        var branchName = branch;
+
+        if (branch.Contains(' '))
+        {
+            var index = branch.IndexOf(' ');
+            branchName = branch.Substring(0, index);
+            branch = branch.Substring(index + 1).Trim();
+
+            index = branch.IndexOf(' ');
+
+            if (index > 0)
+            {
+                hash = branch.Substring(0, index);
+                branch = branch.Substring(index + 1);
+            }
+
+            if (branch.StartsWith("["))
+            {
+                index = branch.IndexOf(']');
+                remote = branch.Substring(1, index - 1);
+                branch = branch.Substring(index + 2);
+            }
+
+            if (branch.Length > 0)
+                message = branch;
+        }
+
+        return new GitBranch
+        {
+            Name = branchName,
+            IsCurrentLocalBranch = prefix == "*",
+            IsRemote = remotes,
+            CommitHash = hash,
+            CommitMessage = message,
+            RemoteBranch = remote
+        };
+    }
+
+    /// <summary>
+    /// Gets the local branches of the repository.
+    /// </summary>
+    /// <returns>A list with the branch names.</returns>
+    public IEnumerable<string> GetBranchNames() => GetBranchNames(false);
+
+    /// <summary>
+    /// Gets the local or remote branches of the repository.
+    /// </summary>
+    /// <param name="remotes"><c>true</c> if the remote branches shall be retrieved; <c>false</c> to retrieve the local
+    /// branches.</param>
+    /// <returns>A list with the branch names.</returns>
+    public IEnumerable<string> GetBranchNames(bool remotes) => GetBranches(remotes, false).Select(branch => branch.Name);
 
     /// <summary>
     /// Gets the current repository status. Executed with default options.

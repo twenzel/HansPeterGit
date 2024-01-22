@@ -209,10 +209,8 @@ public class GitHelper
         initialize(startInfo);
         Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, Helper.MaskCredentials(startInfo.Arguments));
 
-        var sysProcess = Process.Start(startInfo);
-
-        if (sysProcess == null)
-            throw new InvalidOperationException("Could not start process: " + startInfo.FileName + " " + Helper.MaskCredentials(startInfo.Arguments));
+        var sysProcess = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Could not start process: " + startInfo.FileName + " " + Helper.MaskCredentials(startInfo.Arguments));
 
         var process = new GitProcess(sysProcess, Logger);
         process.ConsumeStandardError();
@@ -227,7 +225,7 @@ public class GitHelper
 
     private static bool IsAuthenticationRequired(string[] commands)
     {
-        return (commands.Length > 0 && s_commandRequiringAuthentication.Contains(commands.First(), StringComparer.OrdinalIgnoreCase));
+        return (commands.Length > 0 && s_commandRequiringAuthentication.Contains(commands[0], StringComparer.OrdinalIgnoreCase));
     }
 
     private static void AssertValidCommand(string[] command)
