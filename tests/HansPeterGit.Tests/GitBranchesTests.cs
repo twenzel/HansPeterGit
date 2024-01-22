@@ -32,10 +32,22 @@ public class GitBranchesTests
     public void GetLocalBranchesTest()
     {
         var repos = new GitRepository(".");
-        var branches = repos.GetBranches(false);
+        var branches = repos.GetBranches(false, false);
 
         branches.Should().NotBeEmpty();
-        branches.Should().Contain(b => b.Name == "main" && b.IsCurrentLocalBranch);
+        branches.Should().Contain(b => b.Name == "main");
+        branches.Should().Contain(b => b.IsCurrentLocalBranch);
+        branches.Should().OnlyContain(b => !b.IsRemote);
+    }
+
+    [Test]
+    public void GetLocalBranchesWithDetailsTest()
+    {
+        var repos = new GitRepository(".");
+        var branches = repos.GetBranches(false, true);
+
+        branches.Should().NotBeEmpty();
+        branches.Should().Contain(b => b.Name == "main" && b.RemoteBranch == "origin/main" && !string.IsNullOrEmpty(b.CommitHash) && !string.IsNullOrEmpty(b.CommitMessage));
         branches.Should().OnlyContain(b => !b.IsRemote);
     }
 
@@ -43,10 +55,21 @@ public class GitBranchesTests
     public void GetRemoveBranchesTest()
     {
         var repos = new GitRepository(".");
-        var branches = repos.GetBranches(true);
+        var branches = repos.GetBranches(true, false);
 
         branches.Should().NotBeEmpty();
         branches.Should().Contain(b => b.Name == "origin/main");
+        branches.Should().OnlyContain(b => b.IsRemote);
+    }
+
+    [Test]
+    public void GetRemoveBranchesWithDetailsTest()
+    {
+        var repos = new GitRepository(".");
+        var branches = repos.GetBranches(true, true);
+
+        branches.Should().NotBeEmpty();
+        branches.Should().Contain(b => b.Name == "origin/main" && !string.IsNullOrEmpty(b.CommitHash) && !string.IsNullOrEmpty(b.CommitMessage));
         branches.Should().OnlyContain(b => b.IsRemote);
     }
 }
