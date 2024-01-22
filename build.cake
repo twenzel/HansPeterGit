@@ -1,8 +1,8 @@
-#tool "dotnet:?package=GitVersion.Tool&version=5.10.3"
-#tool "nuget:?package=dotnet-sonarscanner&version=5.7.2"
-#tool "nuget:?package=NuGet.CommandLine&version=6.2.1"
+#tool "dotnet:?package=GitVersion.Tool&version=5.12.0"
+#tool "nuget:?package=dotnet-sonarscanner&version=6.0.0"
+#tool "nuget:?package=NuGet.CommandLine&version=6.8.0"
 
-#addin "nuget:?package=Cake.Sonar&version=1.1.30"
+#addin "nuget:?package=Cake.Sonar&version=1.1.33"
 
 var target = Argument("target", "Default");
 var nugetApiKey = Argument("nugetApiKey", EnvironmentVariable("nugetApiKey"));
@@ -127,7 +127,7 @@ Task("Test")
 	.WithCriteria(!isLocalBuild)
 	.Does(() => {
 		SonarBegin(new SonarBeginSettings {
-			Key = sonarProjectKey,
+			Token = sonarProjectKey,
 			Url = sonarUrl,
 			Organization = sonarOrganization,
 			Login = sonarLogin,

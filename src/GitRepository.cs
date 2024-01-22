@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HansPeterGit.Models;
+﻿using HansPeterGit.Models;
 using HansPeterGit.Options;
 using HansPeterGit.Parser;
 using Microsoft.Extensions.Logging;
@@ -12,7 +11,6 @@ namespace HansPeterGit;
 public class GitRepository
 {
     private readonly GitHelper _helper;
-    private static readonly Regex s_gitBranchRegex = new(@"(?<prefix>\*\s*|\s*)(?<branch>.*)", RegexOptions.Compiled);
 
     /// <summary>
     /// Gets the current working directory of the Git process.
@@ -271,25 +269,32 @@ public class GitRepository
         if (output == null)
             return branches;
 
-        var matches = s_gitBranchRegex.Matches(output);
+        var matches = output.Split('\n');
 
-        foreach (Match match in matches)
+        foreach (var match in matches)
         {
-            var branch = match.Groups["branch"].Value;
-            var prefix = match.Groups["prefix"].Value;
+            var branch = match.Trim();
             if (!string.IsNullOrWhiteSpace(branch) && !branch.Contains(" -> "))
-                branches.Add(CreateBranchInfo(remotes, branch, prefix.Trim()));
+                branches.Add(CreateBranchInfo(remotes, branch));
         }
 
         return branches;
     }
 
-    private static GitBranch CreateBranchInfo(bool remotes, string branch, string prefix)
+    private static GitBranch CreateBranchInfo(bool remotes, string branch)
     {
         var hash = string.Empty;
         var message = string.Empty;
         var remote = string.Empty;
+        var isCurrentLocalBranch = false;
         var branchName = branch;
+
+        if (branch.StartsWith("* "))
+        {
+            isCurrentLocalBranch = true;
+            branch = branch.Substring(2);
+            branchName = branch;
+        }
 
         if (branch.Contains(' '))
         {
@@ -319,7 +324,7 @@ public class GitRepository
         return new GitBranch
         {
             Name = branchName,
-            IsCurrentLocalBranch = prefix == "*",
+            IsCurrentLocalBranch = isCurrentLocalBranch,
             IsRemote = remotes,
             CommitHash = hash,
             CommitMessage = message,
