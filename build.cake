@@ -127,10 +127,10 @@ Task("Test")
 	.WithCriteria(!isLocalBuild)
 	.Does(() => {
 		SonarBegin(new SonarBeginSettings {
-			Token = sonarProjectKey,
+			Key = sonarProjectKey,
 			Url = sonarUrl,
 			Organization = sonarOrganization,
-			Login = sonarLogin,
+			Token = sonarLogin,
 			UseCoreClr = true,
 			VsTestReportsPath = testResultsPath.ToString(),
 			OpenCoverReportsPath = codeCoverageResultFilePath.ToString()
