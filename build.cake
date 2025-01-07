@@ -21,6 +21,7 @@ var outputDirTests = outputDirTemp.Combine("Tests/");
 var codeCoverageResultFilePath = MakeAbsolute(outputDirTests).Combine("**/").CombineWithFilePath("coverage.opencover.xml");
 var testResultsPath = MakeAbsolute(outputDirTests).CombineWithFilePath("*.trx");
 
+var nugetPublishFeed = "https://api.nuget.org/v3/index.json";
 var sonarProjectKey = "twenzel_HansPeterGit";
 var sonarUrl = "https://sonarcloud.io";
 var sonarOrganization = "twenzel";
@@ -165,6 +166,7 @@ Task("SonarEnd")
 		{
 			DotNetNuGetPush(package, new DotNetNuGetPushSettings {
 				ApiKey = nugetApiKey,
+				Source = nugetPublishFeed,
 				SkipDuplicate = true
 			});	
 		}
