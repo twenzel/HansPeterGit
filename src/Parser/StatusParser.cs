@@ -2,17 +2,13 @@
 
 namespace HansPeterGit.Parser;
 
-internal static class StatusParser
+internal static partial class StatusParser
 {
-    private static readonly Dictionary<char, InternalFileStatus> s_codeMap = new Dictionary<char, InternalFileStatus>();
+    private static readonly Dictionary<char, InternalFileStatus> s_codeMap = [];
 
-    private static readonly Regex s_flagAndPath = new Regex(@"^(?<flag>.) (?<path>.+)$", RegexOptions.Compiled);
-    private static readonly Regex s_changedTracked = new Regex(
-        @"^1 (?<flag>..) (?<sub>....) (?<mode1>\d{6}) (?<mode2>\d{6}) (?<mode3>\d{6}) (?<name1>\S+) (?<name2>\S+) (?<path>.+)$",
-        RegexOptions.Compiled);
-    private static readonly Regex s_unmerged = new Regex(
-    @"^u (?<flag>..) (?<sub>....) (?<mode1>\d{6}) (?<mode2>\d{6}) (?<mode3>\d{6}) (?<modeW>\d{6}) (?<name1>\S+) (?<name2>\S+) (?<name3>\S+) (?<path>.+)$",
-    RegexOptions.Compiled);
+    private static readonly Regex s_flagAndPath = FlagAndPatchExpression();
+    private static readonly Regex s_changedTracked = ChangeTrackedExpression();
+    private static readonly Regex s_unmerged = UnmergedExpression();
 
     private enum InternalFileStatus
     {
@@ -49,7 +45,7 @@ internal static class StatusParser
         var branchName = string.Empty;
         var commit = string.Empty;
 
-        foreach (var line in output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        foreach (var line in output.Split(['\n'], StringSplitOptions.RemoveEmptyEntries))
         {
             Match? itemMatch = null;
             switch (line[0])
@@ -76,7 +72,7 @@ internal static class StatusParser
                     break;
 
                 default:
-                    // TODO - parse rename/copy/unknown/etc						
+                    // TODO - parse rename/copy/unknown/etc
                     break;
             }
 
@@ -148,4 +144,13 @@ internal static class StatusParser
         };
 
     }
+
+    [GeneratedRegex(@"^(?<flag>.) (?<path>.+)$", RegexOptions.Compiled)]
+    private static partial Regex FlagAndPatchExpression();
+
+    [GeneratedRegex(@"^1 (?<flag>..) (?<sub>....) (?<mode1>\d{6}) (?<mode2>\d{6}) (?<mode3>\d{6}) (?<name1>\S+) (?<name2>\S+) (?<path>.+)$", RegexOptions.Compiled)]
+    private static partial Regex ChangeTrackedExpression();
+
+    [GeneratedRegex(@"^u (?<flag>..) (?<sub>....) (?<mode1>\d{6}) (?<mode2>\d{6}) (?<mode3>\d{6}) (?<modeW>\d{6}) (?<name1>\S+) (?<name2>\S+) (?<name3>\S+) (?<path>.+)$", RegexOptions.Compiled)]
+    private static partial Regex UnmergedExpression();
 }

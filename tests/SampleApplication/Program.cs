@@ -24,7 +24,7 @@ repository.Checkout("master");
 repository.Pull();
 repository.CleanAll();
 
-File.WriteAllText(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
+await File.WriteAllTextAsync(Path.Combine(repository.WorkingDirectory, "test.txt"), "hello there");
 
 repository.StageAll();
 

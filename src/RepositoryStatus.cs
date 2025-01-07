@@ -11,16 +11,16 @@ namespace HansPeterGit;
 public class RepositoryStatus : IEnumerable<StatusEntry>
 {
     private readonly ICollection<StatusEntry> _statusEntries;
-    private readonly List<StatusEntry> _added = new List<StatusEntry>();
-    private readonly List<StatusEntry> _staged = new List<StatusEntry>();
-    private readonly List<StatusEntry> _removed = new List<StatusEntry>();
-    private readonly List<StatusEntry> _missing = new List<StatusEntry>();
-    private readonly List<StatusEntry> _modified = new List<StatusEntry>();
-    private readonly List<StatusEntry> _untracked = new List<StatusEntry>();
-    private readonly List<StatusEntry> _ignored = new List<StatusEntry>();
-    private readonly List<StatusEntry> _renamedInIndex = new List<StatusEntry>();
-    private readonly List<StatusEntry> _renamedInWorkDir = new List<StatusEntry>();
-    private readonly List<StatusEntry> _unchanged = new List<StatusEntry>();
+    private readonly List<StatusEntry> _added = [];
+    private readonly List<StatusEntry> _staged = [];
+    private readonly List<StatusEntry> _removed = [];
+    private readonly List<StatusEntry> _missing = [];
+    private readonly List<StatusEntry> _modified = [];
+    private readonly List<StatusEntry> _untracked = [];
+    private readonly List<StatusEntry> _ignored = [];
+    private readonly List<StatusEntry> _renamedInIndex = [];
+    private readonly List<StatusEntry> _renamedInWorkDir = [];
+    private readonly List<StatusEntry> _unchanged = [];
 
     private static readonly Dictionary<FileStatus, Action<RepositoryStatus, StatusEntry>> s_mapper = CreateMapper();
 
@@ -115,7 +115,7 @@ public class RepositoryStatus : IEnumerable<StatusEntry>
 
     internal RepositoryStatus(IEnumerable<StatusEntry> entries, string commit, string branch)
     {
-        _statusEntries = new List<StatusEntry>();
+        _statusEntries = [];
 
         BuildLists(entries);
 
