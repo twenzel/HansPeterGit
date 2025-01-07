@@ -135,13 +135,12 @@ public class GitRepository
     /// <param name="options">Options for the pull command</param>
     public void Pull(params string[] options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add("pull");
+        List<string> commands = ["pull"];
 
         if (options != null && options.Length > 0)
-            commandOptions.AddRange(options);
+            commands.AddRange(options);
 
-        _helper.Command(commandOptions.ToArray());
+        _helper.Command(commands);
     }
 
     /// <summary>
@@ -158,13 +157,12 @@ public class GitRepository
     /// <param name="options">Options for the clean command</param>
     public void Clean(params string[] options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add("clean");
+        List<string> commands = ["clean"];
 
         if (options != null && options.Length > 0)
-            commandOptions.AddRange(options);
+            commands.AddRange(options);
 
-        _helper.Command(commandOptions.ToArray());
+        _helper.Command(commands);
     }
 
     /// <summary>
@@ -182,15 +180,14 @@ public class GitRepository
     /// <param name="hard">True for hard reset</param>
     public void Reset(string name, bool hard = false)
     {
-        var commands = new List<string>();
-        commands.Add("reset");
+        List<string> commands = ["reset"];
 
         if (hard)
             commands.Add("--hard");
 
         commands.Add(name);
 
-        _helper.Command(commands.ToArray()); // HEAD is now at <hash> <message>
+        _helper.Command(commands); // HEAD is now at <hash> <message>
     }
 
     /// <summary>
@@ -265,7 +262,7 @@ public class GitRepository
         else if (includeDetails)
             commands.Add("-vv");
 
-        var output = _helper.Command(commands.ToArray());
+        var output = _helper.Command(commands);
         if (output == null)
             return branches;
 
@@ -310,7 +307,7 @@ public class GitRepository
                 branch = branch.Substring(index + 1);
             }
 
-            if (branch.StartsWith("["))
+            if (branch.StartsWith('['))
             {
                 index = branch.IndexOf(']');
                 remote = branch.Substring(1, index - 1);
@@ -363,10 +360,8 @@ public class GitRepository
     /// <exception cref="InvalidOperationException"></exception>
     public RepositoryStatus GetStatus(StatusOptions options)
     {
-        var commands = new List<string>();
-        commands.Add("status");
-        commands.Add("--porcelain=2");
-        commands.Add("--branch");
+        List<string> commands = ["status", "--porcelain=2", "--branch"];
+
         if (options.IncludeUntracked)
             commands.Add("--untracked-files=all");
         else
@@ -377,10 +372,7 @@ public class GitRepository
         if (options.IncludeIgnored)
             commands.Add("--ignored");
 
-        var output = _helper.Command(commands.ToArray());
-
-        if (output == null)
-            throw new InvalidOperationException("Git status command failed");
+        var output = _helper.Command(commands) ?? throw new InvalidOperationException("Git status command failed");
 
         return StatusParser.Parse(output);
     }
@@ -459,15 +451,14 @@ public class GitRepository
     /// <param name="options">Options for the checkout command</param>
     public void Checkout(string branch, params string[] options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add("checkout");
+        List<string> commands = ["checkout"];
 
         if (options != null && options.Length > 0)
-            commandOptions.AddRange(options);
+            commands.AddRange(options);
 
-        commandOptions.Add(branch);
+        commands.Add(branch);
 
-        _helper.Command(commandOptions.ToArray());
+        _helper.Command(commands);
     }
 
     /// <summary>
@@ -486,15 +477,14 @@ public class GitRepository
     /// <param name="options">Options for the rm command</param>
     public void Remove(string path, params string[] options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add("rm");
+        List<string> commands = ["rm"];
 
         if (options != null && options.Length > 0)
-            commandOptions.AddRange(options);
+            commands.AddRange(options);
 
-        commandOptions.Add(path);
+        commands.Add(path);
 
-        _helper.Command(commandOptions.ToArray());
+        _helper.Command(commands);
     }
 
     /// <summary>
@@ -513,15 +503,14 @@ public class GitRepository
     /// <param name="options">Options for the tag command</param>
     public void Tag(string tagName, params string[] options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add("tag");
+        List<string> commands = ["tag"];
 
         if (options != null && options.Length > 0)
-            commandOptions.AddRange(options);
+            commands.AddRange(options);
 
-        commandOptions.Add(tagName);
+        commands.Add(tagName);
 
-        _helper.Command(commandOptions.ToArray());
+        _helper.Command(commands);
     }
 
     /// <summary>

@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Runtime.Serialization;
 
 namespace HansPeterGit;
 
 /// <summary>
 /// Git exception when executing a command
 /// </summary>
-[Serializable]
 public class GitCommandException : Exception
 {
     /// <summary>
@@ -28,13 +26,6 @@ public class GitCommandException : Exception
     /// Creates a new instance of the <see cref="GitCommandException"/> class
     /// </summary>
     public GitCommandException()
-    {
-    }
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="GitCommandException"/> class
-    /// </summary>
-    protected GitCommandException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 

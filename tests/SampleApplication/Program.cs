@@ -34,6 +34,6 @@ if (status.IsDirty)
 {
     var commit = repository.Commit("add test file");
 
-    logger.LogInformation("Pushed new commit {commit} to repository", commit.Id);
+    logger.LogInformation("Pushed new commit {Commit} to repository", commit.Id);
 }
 
