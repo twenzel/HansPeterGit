@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace HansPeterGit.Parser;
 
@@ -72,7 +73,7 @@ internal static partial class StatusParser
                     break;
 
                 default:
-                    // TODO - parse rename/copy/unknown/etc
+                    Debug.Assert(false, $"Unknown status line: {line}");
                     break;
             }
 

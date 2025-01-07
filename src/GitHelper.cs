@@ -49,9 +49,11 @@ public partial class GitHelper
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
+    /// <param name="command">The git command</param>
+    /// <param name="options">Any command options</param>
     public string? Command(string command, GitCommandOptions? options)
     {
-        List<string> commandOptions = ["command"];
+        List<string> commandOptions = [command];
 
         if (options != null)
             GitCommandOptions.AddToOptions(options, commandOptions);
