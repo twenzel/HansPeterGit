@@ -30,7 +30,7 @@ internal static class Extensions
         };
     }
 
-    public static void SetArguments(this ProcessStartInfo startInfo, params string[] args)
+    public static void SetArguments(this ProcessStartInfo startInfo, params IEnumerable<string> args)
     {
         startInfo.Arguments = string.Join(" ", args.Select(arg => QuoteProcessArgument(arg)).ToArray());
     }

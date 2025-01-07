@@ -36,12 +36,12 @@ jobs:
       - name: Fetch all history for all tags and branches
         run: git fetch --prune --unshallow
 
-      - name: Install .NET Core SDK 8.0.x
+      - name: Install .NET Core SDK 9.0.x
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: | 
-            6.0.x
             8.0.x
+            9.0.x
 
       - name: Run Cake script
         uses: cake-build/cake-action@v1

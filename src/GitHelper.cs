@@ -8,10 +8,10 @@ namespace HansPeterGit;
 /// <summary>
 /// Helper class to start git processes
 /// </summary>
-public class GitHelper
+public partial class GitHelper
 {
-    private static readonly Regex s_validCommandName = new Regex("^[a-z0-9A-Z_-]+$");
-    private static readonly List<string> s_commandRequiringAuthentication = new List<string> { "clone", "push" };
+    private static readonly Regex s_validCommandName = ValidCommandNameExpression();
+    private static readonly List<string> s_commandRequiringAuthentication = ["clone", "push"];
 
     /// <summary>
     /// Starting with version 1.7.10, Git uses UTF-8.
@@ -19,7 +19,7 @@ public class GitHelper
     /// </summary>
     private static readonly Encoding s_encoding = new UTF8Encoding(false, true);
 
-    private readonly Stopwatch _stopwatch = new Stopwatch();
+    private readonly Stopwatch _stopwatch = new();
 
     /// <summary>
     /// Gets the current working directory of the Git process.
@@ -51,25 +51,24 @@ public class GitHelper
     /// </summary>
     public string? Command(string command, GitCommandOptions? options)
     {
-        var commandOptions = new List<string>();
-        commandOptions.Add(command);
+        List<string> commandOptions = ["command"];
 
         if (options != null)
             GitCommandOptions.AddToOptions(options, commandOptions);
 
-        return Command(commandOptions.ToArray());
+        return Command(commandOptions);
     }
 
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
-    public string? Command(params string[] commands)
+    public string? Command(params IEnumerable<string> commands)
     {
         string? output = null;
         CommandOutputPipe(stdout => output = stdout.ReadToEnd(), commands);
 
         if (!string.IsNullOrEmpty(output))
-            Logger?.LogDebug("Output: {output}", output);
+            Logger?.LogDebug("Output: {Output}", output);
 
         return output;
     }
@@ -77,13 +76,13 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and returns the first line of its STDOUT.
     /// </summary>
-    public string? CommandOneline(params string[] commands)
+    public string? CommandOneline(params IEnumerable<string> commands)
     {
         string? output = null;
         CommandOutputPipe(stdout => output = stdout.ReadLine(), commands);
 
         if (!string.IsNullOrEmpty(output))
-            Logger?.LogDebug("Output: {output}", output);
+            Logger?.LogDebug("Output: {Output}", output);
 
         return output;
     }
@@ -91,7 +90,7 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command, and redirects STDOUT to the provided action.
     /// </summary>
-    public void CommandOutputPipe(Action<TextReader> handleOutput, params string[] commands)
+    public void CommandOutputPipe(Action<TextReader> handleOutput, params IEnumerable<string> commands)
     {
         MeasureTime(commands, () =>
         {
@@ -105,7 +104,7 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command and provides a text writer to define console input
     /// </summary>
-    public void CommandInputPipe(Action<TextWriter> action, params string[] commands)
+    public void CommandInputPipe(Action<TextWriter> action, params IEnumerable<string> commands)
     {
         MeasureTime(commands, () =>
         {
@@ -119,7 +118,7 @@ public class GitHelper
     /// <summary>
     /// Runs the given git command and provides a text writer to define console input and a reader to read the console
     /// </summary>
-    public void CommandInputOutputPipe(Action<TextWriter, TextReader> interact, params string[] commands)
+    public void CommandInputOutputPipe(Action<TextWriter, TextReader> interact, params IEnumerable<string> commands)
     {
         MeasureTime(commands, () =>
         {
@@ -130,7 +129,7 @@ public class GitHelper
         });
     }
 
-    private void MeasureTime(string[] commands, Action action)
+    private void MeasureTime(IEnumerable<string> commands, Action action)
     {
         if (!Options.LogGitCommandDuration)
             action();
@@ -144,7 +143,7 @@ public class GitHelper
             finally
             {
                 _stopwatch.Stop();
-                Logger?.LogDebug("git command time [{duration}ms] {command}", _stopwatch.ElapsedMilliseconds, string.Join(" ", commands));
+                Logger?.LogDebug("Git command time [{Duration}ms] {Command}", _stopwatch.ElapsedMilliseconds, string.Join(" ", commands));
             }
         }
     }
@@ -162,7 +161,7 @@ public class GitHelper
         }
 
         if (!string.IsNullOrEmpty(process.StandardErrorString))
-            Logger?.LogDebug("StdErr: {standardError}", process.StandardErrorString);
+            Logger?.LogDebug("StdErr: {StandardError}", process.StandardErrorString);
 
         if (!process.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds))
             throw new GitCommandException("Command did not terminate.", process);
@@ -170,7 +169,7 @@ public class GitHelper
             throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, process.StandardErrorString), process);
     }
 
-    private void RedirectStdout(ProcessStartInfo startInfo)
+    private static void RedirectStdout(ProcessStartInfo startInfo)
     {
         startInfo.RedirectStandardOutput = true;
         startInfo.StandardOutputEncoding = s_encoding;
@@ -182,13 +181,13 @@ public class GitHelper
         startInfo.StandardErrorEncoding = s_encoding;
     }
 
-    private void RedirectStdin(ProcessStartInfo startInfo)
+    private static void RedirectStdin(ProcessStartInfo startInfo)
     {
         startInfo.RedirectStandardInput = true;
         // there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
     }
 
-    private GitProcess Start(string[] commands, Action<ProcessStartInfo> initialize)
+    private GitProcess Start(IEnumerable<string> commands, Action<ProcessStartInfo> initialize)
     {
         var startInfo = new ProcessStartInfo();
         startInfo.FileName = Options.PathToGit;
@@ -207,7 +206,7 @@ public class GitHelper
 
         RedirectStderr(startInfo);
         initialize(startInfo);
-        Logger?.LogDebug("Starting process: {filename} {arguments}", startInfo.FileName, Helper.MaskCredentials(startInfo.Arguments));
+        Logger?.LogDebug("Starting process: {Filename} {Arguments}", startInfo.FileName, Helper.MaskCredentials(startInfo.Arguments));
 
         var sysProcess = Process.Start(startInfo)
             ?? throw new InvalidOperationException("Could not start process: " + startInfo.FileName + " " + Helper.MaskCredentials(startInfo.Arguments));
@@ -219,19 +218,19 @@ public class GitHelper
 
     private void AddAuthentication(ProcessStartInfo startInfo)
     {
-        if (Options.Authentication != null)
-            Options.Authentication.AddAuthentication(startInfo);
+        Options.Authentication?.AddAuthentication(startInfo);
     }
 
-    private static bool IsAuthenticationRequired(string[] commands)
+    private static bool IsAuthenticationRequired(IEnumerable<string> commands)
     {
-        return (commands.Length > 0 && s_commandRequiringAuthentication.Contains(commands[0], StringComparer.OrdinalIgnoreCase));
+        return (commands.Any() && s_commandRequiringAuthentication.Contains(commands.First(), StringComparer.OrdinalIgnoreCase));
     }
 
-    private static void AssertValidCommand(string[] command)
+    private static void AssertValidCommand(IEnumerable<string> commands)
     {
-        if (command.Length < 1 || !s_validCommandName.IsMatch(command[0]))
-            throw new InvalidOperationException("bad git command: " + (command.Length == 0 ? "" : command[0]));
+        var commandsExists = commands.Any();
+        if (!commandsExists || !s_validCommandName.IsMatch(commands.First()))
+            throw new InvalidOperationException("bad git command: " + (!commandsExists ? "" : commands.First()));
     }
 
     internal class GitProcess
@@ -270,7 +269,7 @@ public class GitHelper
             if (e.Data != null && e.Data.Trim() != "")
             {
                 var data = e.Data;
-                Logger?.LogInformation("Git error: {error}", data.TrimEnd());
+                Logger?.LogInformation("Git error: {Error}", data.TrimEnd());
                 StandardErrorString += data;
             }
         }
@@ -285,4 +284,7 @@ public class GitHelper
             return _process.WaitForExit(milliseconds);
         }
     }
+
+    [GeneratedRegex("^[a-z0-9A-Z_-]+$")]
+    private static partial Regex ValidCommandNameExpression();
 }
