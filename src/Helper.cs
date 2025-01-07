@@ -5,9 +5,9 @@ namespace HansPeterGit;
 /// <summary>
 /// Little helper class
 /// </summary>
-public static class Helper
+public static partial class Helper
 {
-    private static readonly Regex s_credentials = new Regex("\"AUTHORIZATION:(?<authType>.*) (?<credential>.*)\"", RegexOptions.Compiled);
+    private static readonly Regex s_credentials = CredentialsRegex();
 
     /// <summary>
     /// Adds the username and password to the url
@@ -69,4 +69,7 @@ public static class Helper
 
         return arguments;
     }
+
+    [GeneratedRegex("\"AUTHORIZATION:(?<authType>.*) (?<credential>.*)\"", RegexOptions.Compiled)]
+    private static partial Regex CredentialsRegex();
 }

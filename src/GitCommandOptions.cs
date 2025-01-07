@@ -8,7 +8,7 @@ namespace HansPeterGit;
 /// </summary>
 public abstract class GitCommandOptions
 {
-    private static readonly Dictionary<Type, List<GitCommandOption>> s_properties = new Dictionary<Type, List<GitCommandOption>>();
+    private static readonly Dictionary<Type, List<GitCommandOption>> s_properties = [];
 
     /// <summary>
     /// Gets or sets any additional options
@@ -63,7 +63,7 @@ public abstract class GitCommandOptions
         if (!s_properties.TryGetValue(optionsType, out var options))
         {
             var properties = optionsType.GetProperties();
-            options = new List<GitCommandOption>();
+            options = [];
 
             foreach (var property in properties)
             {
