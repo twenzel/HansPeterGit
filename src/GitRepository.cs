@@ -236,6 +236,26 @@ public class GitRepository
     }
 
     /// <summary>
+    /// Changes the local git configuration
+    /// </summary>
+    /// <param name="configName">Name of the configuration entry</param>
+    /// <param name="value">The new value</param>
+    public void Config(string configName, string value)
+    {
+        _helper.Command("config", configName, value);
+    }
+
+    /// <summary>
+    /// Changes the global git configuration
+    /// </summary>
+    /// <param name="configName">Name of the configuration entry</param>
+    /// <param name="value">The new value</param>
+    public void ConfigGlobal(string configName, string value)
+    {
+        _helper.Command("config", "--global", configName, value);
+    }
+
+    /// <summary>
     /// Gets the local branches of the repository.
     /// </summary>
     /// <returns>A list with the branch.</returns>
