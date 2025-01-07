@@ -1,6 +1,5 @@
 #tool "dotnet:?package=GitVersion.Tool&version=6.1.0"
 #tool "nuget:?package=dotnet-sonarscanner&version=9.0.2"
-#tool "nuget:?package=NuGet.CommandLine&version=6.12.2"
 
 #addin "nuget:?package=Cake.Sonar&version=1.1.33"
 
@@ -22,7 +21,6 @@ var outputDirTests = outputDirTemp.Combine("Tests/");
 var codeCoverageResultFilePath = MakeAbsolute(outputDirTests).Combine("**/").CombineWithFilePath("coverage.opencover.xml");
 var testResultsPath = MakeAbsolute(outputDirTests).CombineWithFilePath("*.trx");
 
-var nugetPublishFeed = "https://api.nuget.org/v3/index.json";
 var sonarProjectKey = "twenzel_HansPeterGit";
 var sonarUrl = "https://sonarcloud.io";
 var sonarOrganization = "twenzel";
@@ -163,11 +161,13 @@ Task("SonarEnd")
 		}
 		
 		// Push the package.
-		NuGetPush(packages, new NuGetPushSettings {
-			Source = nugetPublishFeed,
-			ApiKey = nugetApiKey,
-			SkipDuplicate = true
-		});	
+		foreach(var package in packages)
+		{
+			DotNetNuGetPush(package, new DotNetNuGetPushSettings {
+				ApiKey = nugetApiKey,
+				SkipDuplicate = true
+			});	
+		}
 	});
 
 //////////////////////////////////////////////////////////////////////
